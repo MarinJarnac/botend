@@ -8,36 +8,36 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 const SLUT_COOLDOWN = 45 * 60 * 1000;
 
 const SLUT_ACTIVITIES = [
-    { name: "Cam Stream", min: 120, max: 450, risk: 0.2 },
-    { name: "Private Dance Session", min: 220, max: 700, risk: 0.25 },
-    { name: "After-Hours Club Host", min: 320, max: 900, risk: 0.3 },
-    { name: "VIP Companion Booking", min: 550, max: 1400, risk: 0.35 },
-    { name: "Exclusive Livestream", min: 850, max: 2200, risk: 0.4 },
+    { name: "Stream Cam", min: 120, max: 450, risk: 0.2 },
+    { name: "Session de Danse Privée", min: 220, max: 700, risk: 0.25 },
+    { name: "Hôte de Club de Nuit", min: 320, max: 900, risk: 0.3 },
+    { name: "Rendez-vous d'Escorte VIP", min: 550, max: 1400, risk: 0.35 },
+    { name: "Livestream Exclusif", min: 850, max: 2200, risk: 0.4 },
 ];
 
 const POSITIVE_OUTCOMES = [
-    "Your stream blew up and tips poured in.",
-    "A VIP booking paid far above average.",
-    "Your after-hours shift was packed and profitable.",
-    "Premium requests came through and your payout jumped.",
+    "Votre stream a cartonné et les pourboires ont plu.",
+    "Une réservation VIP a payé bien au-dessus de la moyenne.",
+    "Votre service de nuit était complet et très rentable.",
+    "Des demandes Premium sont arrivées et vos gains ont grimpé.",
 ];
 
 const FINE_OUTCOMES = [
-    "Venue security issued a compliance fine.",
-    "A moderation strike triggered a platform fee.",
-    "You were flagged and had to pay a penalty.",
+    "La sécurité de l'établissement vous a mis une amende de conformité.",
+    "Un avertissement de modération a déclenché des frais de plateforme.",
+    "Vous avez été signalé et avez dû payer une pénalité.",
 ];
 
 const ROBBED_OUTCOMES = [
-    "A fake buyer chargeback wiped part of your earnings.",
-    "A scam booking cleaned out a chunk of your cash.",
-    "You got baited by a fraud account and lost money.",
+    "La contestation bancaire d'un faux acheteur a annulé une partie de vos gains.",
+    "Une fausse réservation a vidé une partie de votre argent liquide.",
+    "Vous vous êtes fait piéger par un compte frauduleux et avez perdu de l'argent.",
 ];
 
 const LOSS_OUTCOMES = [
-    "The set flopped and you had to cover operating costs.",
-    "You burned budget on prep and made no return.",
-    "The shift went sideways and left you in the red.",
+    "La session a fait un bide et vous avez dû couvrir les frais de fonctionnement.",
+    "Vous avez dépensé votre budget dans les préparatifs sans aucun retour sur investissement.",
+    "Le service a mal tourné et vous a laissé dans le rouge.",
 ];
 
 function randomInt(min, max) {
@@ -54,13 +54,16 @@ function resolveOutcome(activity, wallet) {
     const robbedChance = 0.2;
     const roll = Math.random();
 
+    // Mapping français pour les types de fins dans les titres
+    const frTypes = { payout: 'Paiement', fine: 'Amende', robbed: 'Volé', loss: 'Perte' };
+
     if (roll < successChance) {
         const amount = randomInt(activity.min, activity.max);
         return {
             type: 'payout',
             delta: amount,
             message: randomChoice(POSITIVE_OUTCOMES),
-            title: `💰 ${activity.name} - Payout`
+            title: `💰 ${activity.name} - ${frTypes.payout}`
         };
     }
 
@@ -74,7 +77,7 @@ function resolveOutcome(activity, wallet) {
             type: 'fine',
             delta: -amount,
             message: randomChoice(FINE_OUTCOMES),
-            title: `🚨 ${activity.name} - Fined`
+            title: `🚨 ${activity.name} - ${frTypes.fine}`
         };
     }
 
@@ -86,7 +89,7 @@ function resolveOutcome(activity, wallet) {
             type: 'robbed',
             delta: -amount,
             message: randomChoice(ROBBED_OUTCOMES),
-            title: `🕵️ ${activity.name} - Robbed`
+            title: `🕵️ ${activity.name} - ${frTypes.robbed}`
         };
     }
 
@@ -97,14 +100,14 @@ function resolveOutcome(activity, wallet) {
         type: 'loss',
         delta: -amount,
         message: randomChoice(LOSS_OUTCOMES),
-        title: `❌ ${activity.name} - Loss`
+        title: `❌ ${activity.name} - ${frTypes.loss}`
     };
 }
 
 export default {
     data: new SlashCommandBuilder()
         .setName('slut')
-        .setDescription('Take a risky provocative job for random payout or loss'),
+        .setDescription('Accepter un travail provocateur et risqué pour un gain ou une perte aléatoire'),
 
     execute: withErrorHandling(async (interaction, config, client) => {
         const deferred = await InteractionHelper.safeDefer(interaction);
@@ -122,7 +125,7 @@ export default {
                 throw createError(
                     "Failed to load economy data for slut command",
                     ErrorTypes.DATABASE,
-                    "Failed to load your economy data. Please try again later.",
+                    "Impossible de charger vos données économiques. Veuillez réessayer plus tard.",
                     { userId, guildId }
                 );
             }
@@ -134,7 +137,7 @@ export default {
                 throw createError(
                     "Slut cooldown active",
                     ErrorTypes.RATE_LIMIT,
-                    `You need to wait before you can work again! Try again in **${Math.ceil(remainingTime / 60000)}** minutes.`,
+                    `Vous devez attendre avant de pouvoir retravailler ! Réessayez dans **${Math.ceil(remainingTime / 60000)}** minutes.`,
                     { timeRemaining: remainingTime, cooldownType: 'slut' }
                 );
             }
@@ -169,11 +172,11 @@ export default {
             const amountLabel = `${outcome.delta >= 0 ? '+' : '-'}$${Math.abs(outcome.delta).toLocaleString()}`;
             const summaryLines = [
                 `${outcome.message}`,
-                `💸 **Net Result:** ${amountLabel}`,
-                `💳 **Current Balance:** $${userData.wallet.toLocaleString()}`,
-                `📊 **Total Sessions:** ${userData.totalSluts}`,
-                `💵 **Total Earned:** $${(userData.totalSlutEarnings || 0).toLocaleString()}`,
-                `🧾 **Total Lost:** $${(userData.totalSlutLosses || 0).toLocaleString()}`
+                `💸 **Résultat Net :** ${amountLabel}`,
+                `💳 **Solde Actuel :** $${userData.wallet.toLocaleString()}`,
+                `📊 **Sessions Totales :** ${userData.totalSluts}`,
+                `💵 **Total Gagné :** $${(userData.totalSlutEarnings || 0).toLocaleString()}`,
+                `🧾 **Total Perdu :** $${(userData.totalSlutLosses || 0).toLocaleString()}`
             ];
 
             const embed = createEmbed({
@@ -186,8 +189,3 @@ export default {
             await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
     }, { command: 'slut' })
 };
-
-
-
-
-
