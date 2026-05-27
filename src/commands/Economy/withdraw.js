@@ -8,11 +8,11 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('withdraw')
-        .setDescription('Withdraw money from your bank to your wallet')
+        .setDescription('Retirer de l\'argent de votre banque vers votre portefeuille liquide')
         .addIntegerOption(option =>
             option
                 .setName('amount')
-                .setDescription('Amount to withdraw')
+                .setDescription('Le montant à retirer')
                 .setRequired(true)
                 .setMinValue(1)
         ),
@@ -30,7 +30,7 @@ export default {
                 throw createError(
                     "Failed to load economy data",
                     ErrorTypes.DATABASE,
-                    "Failed to load your economy data. Please try again later.",
+                    "Impossible de charger vos données économiques. Veuillez réessayer plus tard.",
                     { userId, guildId }
                 );
             }
@@ -41,7 +41,7 @@ export default {
                 throw createError(
                     "Invalid withdrawal amount",
                     ErrorTypes.VALIDATION,
-                    "You must withdraw a positive amount.",
+                    "Vous devez retirer un montant positif.",
                     { amount: withdrawAmount, userId }
                 );
             }
@@ -54,7 +54,7 @@ export default {
                 throw createError(
                     "Empty bank account",
                     ErrorTypes.VALIDATION,
-                    "Your bank account is empty.",
+                    "Votre compte bancaire est vide.",
                     { userId, bankBalance: userData.bank }
                 );
             }
@@ -66,16 +66,16 @@ export default {
 
             const embed = MessageTemplates.SUCCESS.DATA_UPDATED(
                 "withdrawal",
-                `You successfully withdrew **$${withdrawAmount.toLocaleString()}** from your bank.`
+                `Vous avez retiré avec succès **$${withdrawAmount.toLocaleString()}** de votre banque.`
             )
                 .addFields(
                     {
-                        name: "💵 New Cash Balance",
+                        name: "💵 Nouveau Solde en Liquide",
                         value: `$${userData.wallet.toLocaleString()}`,
                         inline: true,
                     },
                     {
-                        name: "🏦 New Bank Balance",
+                        name: "🏦 Nouveau Solde Bancaire",
                         value: `$${userData.bank.toLocaleString()}`,
                         inline: true,
                     },
