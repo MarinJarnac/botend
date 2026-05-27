@@ -25,9 +25,9 @@ export const botConfig = {
     activities: [
       {
         // Text users will see (example: "Playing /help | Titan Bot").
-        name: "Made with ❤️",
+        name: "En test",
         // Activity type number (0 = Playing).
-        type: 0, 
+        type: 1, 
       },
     ],
   },
@@ -56,9 +56,9 @@ export const botConfig = {
   applications: {
     // Default questions shown when someone fills out an application.
     defaultQuestions: [
-      { question: "What is your name?", required: true },
-      { question: "How old are you?", required: true },
-      { question: "Why do you want to join?", required: true },
+      { question: "Quel est votre nom ?", required: true },
+      { question: "Quel âge avez-vous ?", required: true },
+      { question: "Pourquoi avez-vous rejoint ?", required: true },
     ],
 
     // Embed colors by application status.
@@ -281,7 +281,7 @@ export const botConfig = {
     announcementChannel: null,
 
     // Timezone used to calculate birthday dates.
-    timezone: "UTC",
+    timezone: "UTC+1",
   },
 
   // =========================
@@ -289,10 +289,10 @@ export const botConfig = {
   // =========================
   verification: {
     // Message shown when posting the verification panel.
-    defaultMessage: "Click the button below to verify yourself and gain access to the server!",
+    defaultMessage: "Cliquez sur le bouton pour vous vérifier et accéder à l'ensemble du serveur !",
 
     // Text on the verification button.
-    defaultButtonText: "Verify",
+    defaultButtonText: "Se vérifier",
 
     // Automatic verification behavior.
     autoVerify: {
@@ -359,11 +359,11 @@ export const botConfig = {
     // Welcome template posted when a user joins.
     // Placeholders: {user}, {server}, {memberCount}
     defaultWelcomeMessage:
-      "Welcome {user} to {server}! We now have {memberCount} members!",
+      "Bienvenue {user} sur le serveur {server}! Nous sommes maintenant {memberCount} sur le serveur !",
     // Goodbye template posted when a user leaves.
     // Placeholders: {user}, {memberCount}
     defaultGoodbyeMessage:
-      "{user} has left the server. We now have {memberCount} members.",
+      "{user} a quitté le serveur. Nous sommes maintenant {memberCount} .",
     // Channel ID for welcome messages.
     defaultWelcomeChannel: null,
     // Channel ID for goodbye messages.
@@ -421,13 +421,13 @@ export const botConfig = {
   // GENERIC BOT MESSAGES
   // =========================
   messages: {
-    noPermission: "You do not have permission to use this command.",
-    cooldownActive: "Please wait {time} before using this command again.",
-    errorOccurred: "An error occurred while executing this command.",
+    noPermission: "Vous n'avez pas la permission d'utiliser cette commande.",
+    cooldownActive: "Merci d'attendre {time} avant de réutiliser cette commande.",
+    errorOccurred: "Une erreur est survenue durant l'execution de cette commande.",
     missingPermissions:
-      "I am missing required permissions to perform this action.",
-    commandDisabled: "This command has been disabled.",
-    maintenanceMode: "The bot is currently in maintenance mode.",
+      "Le bot n'a pas suffisamment de permission pour effectuer cette action. Merci de contacter un administrateur pour lui signaler.",
+    commandDisabled: "Cette commande est désactivée sur le serveur.",
+    maintenanceMode: "Le bot est actuellement en maintenance. Merci de rééssayer plus tard.",
   },
 
   // =========================
