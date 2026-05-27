@@ -14,7 +14,7 @@ const SUCCESS_CHANCE = 0.7;
 export default {
     data: new SlashCommandBuilder()
         .setName('beg')
-        .setDescription('Beg for a small amount of money'),
+        .setDescription('Mendier pour obtenir une petite somme d\'argent'),
 
     execute: withErrorHandling(async (interaction, config, client) => {
         const deferred = await InteractionHelper.safeDefer(interaction);
@@ -29,7 +29,7 @@ export default {
                 throw createError(
                     "Failed to load economy data",
                     ErrorTypes.DATABASE,
-                    "Failed to load your economy data. Please try again later.",
+                    "Impossible de charger vos données économiques. Veuillez réessayer plus tard.",
                     { userId, guildId }
                 );
             }
@@ -42,12 +42,12 @@ export default {
                 const seconds = Math.floor((remainingTime % 60000) / 1000);
 
                 let timeMessage =
-                    minutes > 0 ? `${minutes} minute(s)` : `${seconds} second(s)`;
+                    minutes > 0 ? `${minutes} minute(s)` : `${seconds} seconde(s)`;
 
                 throw createError(
                     "Beg cooldown active",
                     ErrorTypes.RATE_LIMIT,
-                    `You are tired from begging! Try again in **${timeMessage}**.`,
+                    `Vous êtes trop fatigué pour mendier ! Réessayez dans **${timeMessage}**.`,
                     { remainingTime, minutes, seconds, cooldownType: 'beg' }
                 );
             }
@@ -64,10 +64,10 @@ export default {
                 newCash += amountWon;
 
                 const successMessages = [
-                    `A kind stranger drops **$${amountWon.toLocaleString()}** into your cup.`,
-                    `You spotted an unattended wallet! You grab **$${amountWon.toLocaleString()}** and run.`,
-                    `Someone took pity on you and gave you **$${amountWon.toLocaleString()}**!`,
-                    `You found **$${amountWon.toLocaleString()}** under a park bench.`,
+                    `Un gentil inconnu dépose **$${amountWon.toLocaleString()}** dans votre gobelet.`,
+                    `Vous apercevez un portefeuille sans surveillance ! Vous y prenez **$${amountWon.toLocaleString()}** avant de détaler.`,
+                    `Quelqu'un a pitié de vous et vous donne **$${amountWon.toLocaleString()}** !`,
+                    `Vous trouvez un billet de **$${amountWon.toLocaleString()}** sous un banc public.`,
                 ];
 
                 replyEmbed = MessageTemplates.SUCCESS.DATA_UPDATED(
@@ -78,26 +78,24 @@ export default {
                 );
             } else {
                 const failMessages = [
-                    "The police chased you off. You got nothing.",
-                    "Someone yelled, 'Get a job!' and walked past.",
-                    "A squirrel stole the single coin you had.",
-                    "You tried to beg, but you were too embarrassed and gave up.",
+                    "La police vous a pris en chasse. Vous n'obtenez rien.",
+                    "Quelqu'un vous crie : « Trouve un travail ! » en passant son chemin.",
+                    "Un écureuil vous a volé la seule pièce que vous aviez.",
+                    "Vous avez essayé de mendier, mais vous étiez trop embarrassé et vous avez abandonné.",
                 ];
 
                 replyEmbed = MessageTemplates.ERRORS.INSUFFICIENT_FUNDS(
                     "nothing",
-                    "You failed to get any money from begging."
+                    "Vous n'avez pas réussi à récolter d'argent."
                 );
                 replyEmbed.data.description = failMessages[Math.floor(Math.random() * failMessages.length)];
             }
 
             userData.wallet = newCash;
-userData.lastBeg = Date.now();
+            userData.lastBeg = Date.now();
 
             await setEconomyData(client, guildId, userId, userData);
 
             await InteractionHelper.safeEditReply(interaction, { embeds: [replyEmbed] });
     }, { command: 'beg' })
 };
-
-
