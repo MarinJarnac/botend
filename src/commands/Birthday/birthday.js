@@ -14,15 +14,15 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('birthday')
-        .setDescription('Birthday system commands')
+        .setDescription('Commandes du système d\'anniversaire')
         .addSubcommand(subcommand =>
             subcommand
                 .setName('set')
-                .setDescription('Set your birthday')
+                .setDescription('Enregistrer votre date d\'anniversaire')
                 .addIntegerOption(option =>
                     option
                         .setName('month')
-                        .setDescription('Birth month (1-12)')
+                        .setDescription('Mois de naissance (1-12)')
                         .setRequired(true)
                         .setMinValue(1)
                         .setMaxValue(12)
@@ -30,7 +30,7 @@ export default {
                 .addIntegerOption(option =>
                     option
                         .setName('day')
-                        .setDescription('Birth day (1-31)')
+                        .setDescription('Jour de naissance (1-31)')
                         .setRequired(true)
                         .setMinValue(1)
                         .setMaxValue(31)
@@ -39,37 +39,37 @@ export default {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('info')
-                .setDescription('View birthday information')
+                .setDescription('Afficher les informations d\'anniversaire')
                 .addUserOption(option =>
                     option
                         .setName('user')
-                        .setDescription('User to check birthday for')
+                        .setDescription('L\'utilisateur dont vous voulez vérifier l\'anniversaire')
                         .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('list')
-                .setDescription('List all birthdays in the server')
+                .setDescription('Lister tous les anniversaires du serveur')
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('remove')
-                .setDescription('Remove your birthday')
+                .setDescription('Supprimer votre date d\'anniversaire')
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('next')
-                .setDescription('Show upcoming birthdays')
+                .setDescription('Afficher les prochains anniversaires')
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('setchannel')
-                .setDescription('Set or disable the channel for birthday announcements. (Manage Server required)')
+                .setDescription('Définir ou désactiver le salon pour les annonces d\'anniversaire (Gérer le serveur requis)')
                 .addChannelOption(option =>
                     option
                         .setName('channel')
-                        .setDescription('The text channel for announcements. Leave empty to disable.')
+                        .setDescription('Le salon textuel pour les annonces. Laissez vide pour désactiver.')
                         .addChannelTypes(ChannelType.GuildText)
                         .setRequired(false)
                 )
@@ -94,12 +94,12 @@ export default {
                     return await birthdaySetchannel.execute(interaction, config, client);
                 default:
                     return InteractionHelper.safeReply(interaction, {
-                        embeds: [errorEmbed('Error', 'Unknown subcommand')],
+                        embeds: [errorEmbed('Erreur', 'Sous-commande inconnue')],
                         flags: MessageFlags.Ephemeral
                     });
             }
         } catch (error) {
-            logger.error('Birthday command execution failed', {
+            logger.error('Échec de l\'exécution de la commande d\'anniversaire', {
                 error: error.message,
                 stack: error.stack,
                 userId: interaction.user.id,
