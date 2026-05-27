@@ -11,29 +11,29 @@ const BASE_MAX_REWARD = 900;
 const FISHING_ROD_MULTIPLIER = 1.5;
 
 const FISH_TYPES = [
-    { name: 'Bass', emoji: '🐟', rarity: 'common' },
-    { name: 'Salmon', emoji: '🐟', rarity: 'common' },
-    { name: 'Trout', emoji: '🐟', rarity: 'common' },
-    { name: 'Tuna', emoji: '🐟', rarity: 'uncommon' },
-    { name: 'Swordfish', emoji: '🐟', rarity: 'uncommon' },
-    { name: 'Octopus', emoji: '🐙', rarity: 'rare' },
-    { name: 'Lobster', emoji: '🦞', rarity: 'rare' },
-    { name: 'Shark', emoji: '🦈', rarity: 'epic' },
-    { name: 'Whale', emoji: '🐋', rarity: 'legendary' },
+    { name: 'Perche', emoji: '🐟', rarity: 'common' },
+    { name: 'Saumon', emoji: '🐟', rarity: 'common' },
+    { name: 'Truite', emoji: '🐟', rarity: 'common' },
+    { name: 'Thon', emoji: '🐟', rarity: 'uncommon' },
+    { name: 'Espadon', emoji: '🐟', rarity: 'uncommon' },
+    { name: 'Poulpe', emoji: '🐙', rarity: 'rare' },
+    { name: 'Homard', emoji: '🦞', rarity: 'rare' },
+    { name: 'Requin', emoji: '🦈', rarity: 'epic' },
+    { name: 'Baleine', emoji: '🐋', rarity: 'legendary' },
 ];
 
 const CATCH_MESSAGES = [
-    "You cast your line into the crystal clear waters...",
-    "You wait patiently as your bobber floats...",
-    "After a few minutes of waiting, you feel a tug...",
-    "The water ripples as something takes your bait...",
-    "You reel in your catch with expert precision...",
+    "Vous lancez votre ligne dans les eaux cristallines...",
+    "Vous attendez patiemment pendant que votre flotteur dérive...",
+    "Après quelques minutes d'attente, vous sentez une secousse...",
+    "L'eau frémit alors que quelque chose mord à votre hameçon...",
+    "Vous moulinez et ramenez votre prise avec une précision d'expert...",
 ];
 
 export default {
     data: new SlashCommandBuilder()
         .setName('fish')
-        .setDescription('Go fishing to catch fish and earn money'),
+        .setDescription('Aller pêcher pour attraper des poissons et gagner de l\'argent'),
 
     execute: withErrorHandling(async (interaction, config, client) => {
         const deferred = await InteractionHelper.safeDefer(interaction);
@@ -57,7 +57,7 @@ export default {
                 throw createError(
                     "Fishing cooldown active",
                     ErrorTypes.RATE_LIMIT,
-                    `You're too tired to fish right now. Rest for **${hours}h ${minutes}m** before fishing again.`,
+                    `Vous êtes trop fatigué pour pêcher pour le moment. Reposez-vous encore **${hours}h ${minutes}m** avant de relancer votre ligne.`,
                     { remaining, cooldownType: 'fish' }
                 );
             }
@@ -93,7 +93,7 @@ export default {
             
             if (hasFishingRod > 0) {
                 finalEarned = Math.floor(baseEarned * FISHING_ROD_MULTIPLIER);
-                multiplierMessage = `\n🎣 **Fishing Rod Bonus: +50%**`;
+                multiplierMessage = `\n🎣 **Bonus Canne à Pêche : +50%**`;
             }
 
             const catchMessage = CATCH_MESSAGES[Math.floor(Math.random() * CATCH_MESSAGES.length)];
@@ -111,24 +111,32 @@ export default {
                 legendary: '#F1C40F'
             };
 
+            const rarityNames = {
+                common: 'Commun',
+                uncommon: 'Peu Commun',
+                rare: 'Rare',
+                epic: 'Épique',
+                legendary: 'Légendaire'
+            };
+
             const embed = createEmbed({
-                title: '🎣 Fishing Success!',
-                description: `${catchMessage}\n\nYou caught a **${fishCaught.emoji} ${fishCaught.name}**! You sold it for **$${finalEarned.toLocaleString()}**!${multiplierMessage}`,
+                title: '🎣 Pêche Réussie !',
+                description: `${catchMessage}\n\nVous avez attrapé un(e) **${fishCaught.emoji} ${fishCaught.name}** ! Vous l'avez vendu(e) pour **$${finalEarned.toLocaleString()}** !${multiplierMessage}`,
                 color: rarityColors[fishCaught.rarity]
             })
                 .addFields(
                     {
-                        name: "💵 New Cash Balance",
+                        name: "💵 Nouveau Solde en Liquide",
                         value: `$${userData.wallet.toLocaleString()}`,
                         inline: true,
                     },
                     {
-                        name: "🐟 Rarity",
-                        value: fishCaught.rarity.charAt(0).toUpperCase() + fishCaught.rarity.slice(1),
+                        name: "🐟 Rareté",
+                        value: rarityNames[fishCaught.rarity],
                         inline: true,
                     }
                 )
-                .setFooter({ text: `Next fishing trip available in 45 minutes.` });
+                .setFooter({ text: `Prochaine session de pêche disponible dans 45 minutes.` });
 
             await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
     }, { command: 'fish' })
