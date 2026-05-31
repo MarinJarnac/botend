@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, PermissionFlagsBits, PermissionsBitField, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { createEmbed, errorEmbed, successEmbed, infoEmbed, warningEmbed } from '../../utils/embeds.js';
+import { SlashCommandBuilder, PermissionFlagsBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { createEmbed, errorEmbed, successEmbed } from '../../utils/embeds.js';
 import { getFromDb, setInDb } from '../../utils/database.js';
 import { logger } from '../../utils/logger.js';
 import { handleInteractionError } from '../../utils/errorHandler.js';
@@ -13,119 +13,119 @@ function generateShareId() {
 export default {
     data: new SlashCommandBuilder()
         .setName("todo")
-        .setDescription("Manage your personal to-do list")
+        .setDescription("Gérez votre liste de tâches personnelle")
         .addSubcommand(subcommand =>
             subcommand
                 .setName("add")
-                .setDescription("Add a task to your to-do list")
+                .setDescription("Ajouter une tâche à votre liste")
                 .addStringOption(option =>
                     option
                         .setName("task")
-                        .setDescription("The task to add")
+                        .setDescription("La tâche à ajouter")
                         .setRequired(true)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("list")
-                .setDescription("View your to-do list")
+                .setDescription("Voir votre liste de tâches")
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("complete")
-                .setDescription("Mark a task as complete")
+                .setDescription("Marquer une tâche comme terminée")
                 .addIntegerOption(option =>
                     option
                         .setName("number")
-                        .setDescription("The number of the task to complete")
+                        .setDescription("Le numéro de la tâche à terminer")
                         .setRequired(true)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("remove")
-                .setDescription("Remove a task from your to-do list")
+                .setDescription("Supprimer une tâche de votre liste")
                 .addIntegerOption(option =>
                     option
                         .setName("number")
-                        .setDescription("The number of the task to remove")
+                        .setDescription("Le numéro de la tâche à supprimer")
                         .setRequired(true)
                 )
         )
         .addSubcommandGroup(group => 
             group
                 .setName("share")
-                .setDescription("Manage shared to-do lists")
+                .setDescription("Gérer les listes de tâches partagées")
                 .addSubcommand(subcommand =>
                     subcommand
                         .setName("create")
-                        .setDescription("Create a new shared to-do list")
+                        .setDescription("Créer une nouvelle liste partagée")
                         .addStringOption(option =>
                             option
                                 .setName("name")
-                                .setDescription("Name for the shared list")
+                                .setDescription("Nom de la liste partagée")
                                 .setRequired(true)
                         )
                 )
                 .addSubcommand(subcommand =>
                     subcommand
                         .setName("add")
-                        .setDescription("Add a member to a shared list")
+                        .setDescription("Ajouter un membre à une liste partagée")
                         .addStringOption(option =>
                             option
                                 .setName("list_id")
-                                .setDescription("ID of the shared list")
+                                .setDescription("ID de la liste partagée")
                                 .setRequired(true)
                         )
                         .addUserOption(option =>
                             option
                                 .setName("user")
-                                .setDescription("User to add to the list")
+                                .setDescription("Utilisateur à ajouter à la liste")
                                 .setRequired(true)
                         )
                 )
                 .addSubcommand(subcommand =>
                     subcommand
                         .setName("view")
-                        .setDescription("View a shared to-do list")
+                        .setDescription("Voir une liste de tâches partagée")
                         .addStringOption(option =>
                             option
                                 .setName("list_id")
-                                .setDescription("ID of the shared list")
+                                .setDescription("ID de la liste partagée")
                                 .setRequired(true)
                         )
                 )
                 .addSubcommand(subcommand =>
                     subcommand
                         .setName("addtask")
-                        .setDescription("Add a task to a shared to-do list")
+                        .setDescription("Ajouter une tâche à une liste partagée")
                         .addStringOption(option =>
                             option
                                 .setName("list_id")
-                                .setDescription("ID of the shared list")
+                                .setDescription("ID de la liste partagée")
                                 .setRequired(true)
                         )
                         .addStringOption(option =>
                             option
                                 .setName("task")
-                                .setDescription("The task to add")
+                                .setDescription("La tâche à ajouter")
                                 .setRequired(true)
                         )
                 )
                 .addSubcommand(subcommand =>
                     subcommand
                         .setName("remove")
-                        .setDescription("Remove a task from a shared to-do list")
+                        .setDescription("Supprimer une tâche d'une liste partagée")
                         .addStringOption(option =>
                             option
                                 .setName("list_id")
-                                .setDescription("ID of the shared list")
+                                .setDescription("ID de la liste partagée")
                                 .setRequired(true)
                         )
                         .addIntegerOption(option =>
                             option
                                 .setName("number")
-                                .setDescription("The number of the task to remove")
+                                .setDescription("Le numéro de la tâche à supprimer")
                                 .setRequired(true)
                         )
                 )
@@ -136,8 +136,8 @@ export default {
 
     async execute(interaction, config, client) {
         const userId = interaction.user.id;
-                const subcommand = interaction.options.getSubcommand();
-                const shareSubcommand = interaction.options.getSubcommandGroup() === 'share' ? interaction.options.getSubcommand() : null;
+        const subcommand = interaction.options.getSubcommand();
+        const shareSubcommand = interaction.options.getSubcommandGroup() === 'share' ? interaction.options.getSubcommand() : null;
 
         async function getOrCreateSharedList(listId, creatorId = null, listName = null) {
             const listKey = `shared_todo_${listId}`;
@@ -198,9 +198,9 @@ export default {
                         return await InteractionHelper.safeEditReply(interaction, {
                             embeds: [
                                 successEmbed(
-                                    "Shared List Created",
-                                    `Created shared list "${listName}" with ID: \`${listId}\`\n` +
-                                    `Use \`/todo share add list_id:${listId} user:@username\` to add members.`
+                                    "Liste partagée créée",
+                                    `Liste partagée "${listName}" créée avec l'ID : \`${listId}\`\n` +
+                                    `Utilisez \`/todo share add list_id:${listId} user:@utilisateur\` pour ajouter des membres.`
                                 )
                             ]
                         });
@@ -213,13 +213,13 @@ export default {
                         const listData = await getOrCreateSharedList(listId);
                         if (!listData) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "Shared list not found.")]
+                                embeds: [errorEmbed("Erreur", "Liste partagée introuvable.")]
                             });
                         }
                         
                         if (listData.creatorId !== userId) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "Only the list creator can add members.")]
+                                embeds: [errorEmbed("Erreur", "Seul le créateur de la liste peut ajouter des membres.")]
                             });
                         }
                         
@@ -236,14 +236,14 @@ export default {
                             
                             return await InteractionHelper.safeEditReply(interaction, {
                                 embeds: [
-                                    successEmbed("Member Added", 
-                                        `Added ${memberToAdd.username} to the shared list "${listData.name}"`
+                                    successEmbed("Membre ajouté", 
+                                        `Ajout de ${memberToAdd.username} à la liste partagée "${listData.name}"`
                                     )
                                 ]
                             });
                         } else {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "User is already a member of this list.")]
+                                embeds: [errorEmbed("Erreur", "L'utilisateur est déjà membre de cette liste.")]
                             });
                         }
                     }
@@ -254,13 +254,13 @@ export default {
                         
                         if (!listData) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "Shared list not found.")]
+                                embeds: [errorEmbed("Erreur", "Liste partagée introuvable.")]
                             });
                         }
                         
                         if (!listData.members.includes(userId)) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "You don't have access to this list.")]
+                                embeds: [errorEmbed("Erreur", "Vous n'avez pas accès à cette liste.")]
                             });
                         }
                         
@@ -277,25 +277,25 @@ export default {
                                     embeds: [
                                         successEmbed(
                                             `📋 **${listData.name}**\n\n` +
-                                            `👑 **Owner:** ${ownerName}\n` +
-                                            `👥 **Members:** ${memberList}\n\n` +
-                                            `*This list is currently empty. Use the "Add Task" button to add tasks!*`,
-                                            `Shared List (ID: \`${listId}\`)`
+                                            `👑 **Propriétaire :** ${ownerName}\n` +
+                                            `👥 **Membres :** ${memberList}\n\n` +
+                                            `*Cette liste est actuellement vide. Utilisez les boutons ci-dessous pour ajouter des tâches !*`,
+                                            `Liste partagée (ID : \`${listId}\`)`
                                         )
                                     ],
                                     components: [
                                         new ActionRowBuilder().addComponents(
                                             new ButtonBuilder()
                                                 .setCustomId(`shared_todo_add_${listId}`)
-                                                .setLabel('Add Task')
+                                                .setLabel('Ajouter tâche')
                                                 .setStyle(ButtonStyle.Primary),
                                             new ButtonBuilder()
                                                 .setCustomId(`shared_todo_complete_${listId}`)
-                                                .setLabel('Complete Task')
+                                                .setLabel('Terminer tâche')
                                                 .setStyle(ButtonStyle.Success),
                                             new ButtonBuilder()
                                                 .setCustomId(`shared_todo_remove_${listId}`)
-                                                .setLabel('Remove Task')
+                                                .setLabel('Supprimer tâche')
                                                 .setStyle(ButtonStyle.Danger)
                                         )
                                     ]
@@ -306,7 +306,7 @@ export default {
                             .map(task => 
                                 `${task.completed ? '✅' : '📝'} #${task.id} ${task.text} ` +
                                 `\`[${new Date(task.createdAt).toLocaleDateString()}]` +
-                                (task.completed ? ` • Completed by ${task.completedBy}` : '') + '`'
+                                (task.completed ? ` • Terminé par ${task.completedBy}` : '') + '`'
                             )
                             .join('\n');
 
@@ -319,27 +319,27 @@ export default {
                         const ownerName = owner ? owner.user.username : `<@${listData.creatorId}>`;
 
                         const fullListDisplay = `📋 **${listData.name}**\n\n` +
-                            `👑 **Owner:** ${ownerName}\n` +
-                            `👥 **Members:** ${memberList}\n\n` +
-                            `**Tasks:**\n${taskList}`;
+                            `👑 **Propriétaire :** ${ownerName}\n` +
+                            `👥 **Membres :** ${memberList}\n\n` +
+                            `**Tâches :**\n${taskList}`;
 
                         return await InteractionHelper.safeEditReply(interaction, {
                             embeds: [
-                                successEmbed(fullListDisplay, `Shared List (ID: \`${listId}\`)`)
+                                successEmbed(fullListDisplay, `Liste partagée (ID : \`${listId}\`)`)
                             ],
                             components: [
                                 new ActionRowBuilder().addComponents(
                                     new ButtonBuilder()
                                         .setCustomId(`shared_todo_add_${listId}`)
-                                        .setLabel('Add Task')
+                                        .setLabel('Ajouter tâche')
                                         .setStyle(ButtonStyle.Primary),
                                     new ButtonBuilder()
                                         .setCustomId(`shared_todo_complete_${listId}`)
-                                        .setLabel('Complete Task')
+                                        .setLabel('Terminer tâche')
                                         .setStyle(ButtonStyle.Success),
                                     new ButtonBuilder()
                                         .setCustomId(`shared_todo_remove_${listId}`)
-                                        .setLabel('Remove Task')
+                                        .setLabel('Supprimer tâche')
                                         .setStyle(ButtonStyle.Danger)
                                 )
                             ]
@@ -354,13 +354,13 @@ export default {
                         
                         if (!listData) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "Shared list not found.")]
+                                embeds: [errorEmbed("Erreur", "Liste partagée introuvable.")]
                             });
                         }
                         
                         if (!listData.members.includes(userId)) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "You don't have access to this list.")]
+                                embeds: [errorEmbed("Erreur", "Vous n'avez pas accès à cette liste.")]
                             });
                         }
                         
@@ -377,7 +377,7 @@ export default {
                         
                         return await InteractionHelper.safeEditReply(interaction, {
                             embeds: [
-                                successEmbed("Task Added", `Added "${taskText}" to the shared list "${listData.name}"`)
+                                successEmbed("Tâche ajoutée", `"${taskText}" ajoutée à la liste partagée "${listData.name}"`)
                             ]
                         });
                     }
@@ -390,20 +390,20 @@ export default {
 
                         if (!listData) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "Shared list not found.")]
+                                embeds: [errorEmbed("Erreur", "Liste partagée introuvable.")]
                             });
                         }
 
                         if (!listData.members.includes(userId)) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "You don't have access to this list.")]
+                                embeds: [errorEmbed("Erreur", "Vous n'avez pas accès à cette liste.")]
                             });
                         }
 
                         const taskIndex = listData.tasks.findIndex(task => task.id === taskNumber);
                         if (taskIndex === -1) {
                             return await InteractionHelper.safeEditReply(interaction, {
-                                embeds: [errorEmbed("Error", "Task not found.")]
+                                embeds: [errorEmbed("Erreur", "Tâche introuvable.")]
                             });
                         }
 
@@ -412,7 +412,7 @@ export default {
 
                         return await InteractionHelper.safeEditReply(interaction, {
                             embeds: [
-                                successEmbed("Task Removed", `Removed "${removedTask.text}" from the shared list "${listData.name}".`)
+                                successEmbed("Tâche supprimée", `"${removedTask.text}" supprimée de la liste partagée "${listData.name}".`)
                             ]
                         });
                     }
@@ -447,8 +447,8 @@ export default {
                     return await InteractionHelper.safeEditReply(interaction, {
                         embeds: [
                             successEmbed(
-                                "Task Added",
-                                `Added "${taskText}" to your to-do list.`
+                                "Tâche ajoutée",
+                                `"${taskText}" a été ajoutée à votre liste de tâches.`
                             ),
                         ],
                     });
@@ -457,20 +457,20 @@ export default {
                 case 'list': {
                     if (userData.tasks.length === 0) {
                         return await InteractionHelper.safeEditReply(interaction, {
-                            embeds: [successEmbed("Your to-do list is empty!", "Your To-Do List")],
+                            embeds: [successEmbed("Votre liste de tâches est vide !", "Votre liste de tâches")],
                         });
                     }
 
                     const taskList = userData.tasks
                         .map(task => 
                             `${task.completed ? '✅' : '📝'} #${task.id} ${task.text} ` +
-                            `\`[${new Date(task.createdAt).toLocaleDateString()}\``
+                            `\`[${new Date(task.createdAt).toLocaleDateString()}]\``
                         )
                         .join('\n');
 
                     return await InteractionHelper.safeEditReply(interaction, {
                         embeds: [
-                            successEmbed(taskList, "Your To-Do List")
+                            successEmbed(taskList, "Votre liste de tâches")
                         ],
                     });
                 }
@@ -481,13 +481,13 @@ export default {
                     
                     if (!task) {
                         return await InteractionHelper.safeEditReply(interaction, {
-                            embeds: [errorEmbed("Error", "Task not found.")],
+                            embeds: [errorEmbed("Erreur", "Tâche introuvable.")],
                         });
                     }
 
                     if (task.completed) {
                         return await InteractionHelper.safeEditReply(interaction, {
-                            embeds: [errorEmbed("Task Already Completed", `Task #${task.id} is already completed.`)],
+                            embeds: [errorEmbed("Tâche déjà terminée", `La tâche #${task.id} est déjà terminée.`)],
                         });
                     }
                     
@@ -496,7 +496,7 @@ export default {
                     
                     return await InteractionHelper.safeEditReply(interaction, {
                         embeds: [
-                            successEmbed("Task Completed", `Marked "${task.text}" as complete!`)
+                            successEmbed("Tâche terminée", `"${task.text}" marquée comme terminée !`)
                         ],
                     });
                 }
@@ -507,7 +507,7 @@ export default {
                     
                     if (taskIndex === -1) {
                         return await InteractionHelper.safeEditReply(interaction, {
-                            embeds: [errorEmbed("Error", "Task not found.")],
+                            embeds: [errorEmbed("Erreur", "Tâche introuvable.")],
                         });
                     }
                     
@@ -516,14 +516,14 @@ export default {
                     
                     return await InteractionHelper.safeEditReply(interaction, {
                         embeds: [
-                            successEmbed("Task Removed", `Removed "${removedTask.text}" from your to-do list.`)
+                            successEmbed("Tâche supprimée", `"${removedTask.text}" supprimée de votre liste de tâches.`)
                         ],
                     });
                 }
 
                 default:
                     return await InteractionHelper.safeEditReply(interaction, {
-                        embeds: [errorEmbed("Error", "Invalid subcommand.")],
+                        embeds: [errorEmbed("Erreur", "Sous-commande invalide.")],
                     });
             }
         } catch (error) {
@@ -541,7 +541,3 @@ export default {
         }
     },
 };
-
-
-
-
