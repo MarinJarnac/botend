@@ -3,17 +3,18 @@ import { createEmbed, errorEmbed, successEmbed, infoEmbed, warningEmbed } from '
 import { logger } from '../../utils/logger.js';
 import { handleInteractionError } from '../../utils/errorHandler.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
+
 const GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
 const WEATHER_URL = "https://api.open-meteo.com/v1/forecast";
 
 export default {
     data: new SlashCommandBuilder()
-        .setName("weather")
-        .setDescription("Get real-time weather information for a location")
+        .setName("meteo")
+        .setDescription("Obtenir les informations météo en temps réel d'une ville")
         .addStringOption((option) =>
             option
-                .setName("city")
-                .setDescription("The city name, e.g., 'London' or 'Tokyo'")
+                .setName("ville")
+                .setDescription("Le nom de la ville, ex: 'Paris' ou 'Tokyo'")
                 .setRequired(true),
         ),
 
@@ -24,12 +25,12 @@ export default {
                 logger.warn(`Weather interaction defer failed`, {
                     userId: interaction.user.id,
                     guildId: interaction.guildId,
-                    commandName: 'weather'
+                    commandName: 'meteo'
                 });
                 return;
             }
 
-            const city = interaction.options.getString("city");
+            const city = interaction.options.getString("ville");
 
             const geoResponse = await fetch(
                 `${GEOCODING_URL}?name=${encodeURIComponent(city)}`,
@@ -45,8 +46,8 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "City Not Found",
-                            `Could not find a location for **${city}**. Please check the spelling.`,
+                            "Ville introuvable",
+                            `Impossible de trouver une localisation pour **${city}**. Veuillez vérifier l'orthographe.`,
                         ),
                     ],
                 });
@@ -71,8 +72,8 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "API Error",
-                            "A weather service error occurred.",
+                            "Erreur API",
+                            "Une erreur est survenue avec le service météo.",
                         ),
                     ],
                 });
@@ -87,20 +88,20 @@ export default {
 
             const condition = getWeatherDescription(weatherCode);
 
-            const embed = createEmbed({ title: `🌎 Weather in ${cityDisplay}, ${country}`, description: condition.description })
+            const embed = createEmbed({ title: `🌎 Météo à ${cityDisplay}, ${country}`, description: condition.description })
                 .addFields(
                     {
-                        name: "🌡️ Temperature",
+                        name: "🌡️ Température",
                         value: `${temperature}°C`,
                         inline: true,
                     },
                     {
-                        name: "💧 Humidity",
+                        name: "💧 Humidité",
                         value: `${humidity}%`,
                         inline: true,
                     },
                     {
-                        name: "💨 Wind Speed",
+                        name: "💨 Vitesse du vent",
                         value: `${windSpeed} km/h`,
                         inline: true,
                     },
@@ -123,36 +124,29 @@ export default {
                 stack: error.stack,
                 userId: interaction.user.id,
                 guildId: interaction.guildId,
-                commandName: 'weather'
+                commandName: 'meteo'
             });
             await handleInteractionError(interaction, error, {
-                commandName: 'weather',
+                commandName: 'meteo',
                 source: 'weather_command'
             });
         }
     },
 };
 
-
-
-
-
 function getWeatherDescription(code) {
     if (code >= 0 && code <= 3) {
-        return { description: "Clear sky / Partly cloudy ☀️", emoji: "☀️" };
+        return { description: "Ciel dégagé / Partiellement nuageux ☀️", emoji: "☀️" };
     } else if (code >= 45 && code <= 48) {
-        return { description: "Fog and Rime fog 🌫️", emoji: "🌫️" };
+        return { description: "Brouillard et givre 🌫️", emoji: "🌫️" };
     } else if (code >= 51 && code <= 67) {
-        return { description: "Drizzle or Rain 🌧️", emoji: "🌧️" };
+        return { description: "Bruine ou pluie 🌧️", emoji: "🌧️" };
     } else if (code >= 71 && code <= 75) {
-        return { description: "Snow fall ❄️", emoji: "❄️" };
+        return { description: "Chutes de neige ❄️", emoji: "❄️" };
     } else if (code >= 80 && code <= 86) {
-        return { description: "Showers (Rain/Snow) 🌨️", emoji: "🌨️" };
+        return { description: "Averses (pluie/neige) 🌨️", emoji: "🌨️" };
     } else if (code >= 95 && code <= 99) {
-        return { description: "Thunderstorm ⛈️", emoji: "⛈️" };
+        return { description: "Orage ⛈️", emoji: "⛈️" };
     }
-    return { description: "Unknown conditions.", emoji: "" };
+    return { description: "Conditions inconnues.", emoji: "" };
 }
-
-
-
