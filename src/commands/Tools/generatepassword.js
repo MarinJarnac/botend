@@ -4,27 +4,28 @@ import { createEmbed, errorEmbed, successEmbed, infoEmbed, warningEmbed } from '
 import { logger } from '../../utils/logger.js';
 import { handleInteractionError } from '../../utils/errorHandler.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
+
 export default {
     data: new SlashCommandBuilder()
         .setName('generatepassword')
-        .setDescription('Generate a strong, random password')
+        .setDescription('Générer un mot de passe fort et aléatoire')
         .addIntegerOption(option =>
             option.setName('length')
-                .setDescription('Password length (default: 16, max: 50)')
+                .setDescription('Longueur du mot de passe (défaut : 16, max : 50)')
                 .setMinValue(8)
                 .setMaxValue(50)
                 .setRequired(false))
         .addBooleanOption(option =>
             option.setName('uppercase')
-                .setDescription('Include uppercase letters (A-Z)')
+                .setDescription('Inclure des lettres majuscules (A-Z)')
                 .setRequired(false))
         .addBooleanOption(option =>
             option.setName('numbers')
-                .setDescription('Include numbers (0-9)')
+                .setDescription('Inclure des chiffres (0-9)')
                 .setRequired(false))
         .addBooleanOption(option =>
             option.setName('symbols')
-                .setDescription('Include symbols (!@#$%^&*)')
+                .setDescription('Inclure des symboles (!@#$%^&*)')
                 .setRequired(false)),
 
     async execute(interaction) {
@@ -43,16 +44,16 @@ export default {
 
         try {
             const length = interaction.options.getInteger('length') || 16;
-                const includeUppercase = interaction.options.getBoolean('uppercase') ?? true;
-                const includeNumbers = interaction.options.getBoolean('numbers') ?? true;
-                const includeSymbols = interaction.options.getBoolean('symbols') ?? true;
-                
-                if (length < 8 || length > 50) {
-                    await InteractionHelper.safeEditReply(interaction, {
-                        embeds: [errorEmbed('❌ Invalid Length', 'Password must be 8-50 characters. You provided: ' + length)],
-                    });
-                    return;
-                }
+            const includeUppercase = interaction.options.getBoolean('uppercase') ?? true;
+            const includeNumbers = interaction.options.getBoolean('numbers') ?? true;
+            const includeSymbols = interaction.options.getBoolean('symbols') ?? true;
+            
+            if (length < 8 || length > 50) {
+                await InteractionHelper.safeEditReply(interaction, {
+                    embeds: [errorEmbed('❌ Longueur invalide', 'Le mot de passe doit contenir entre 8 et 50 caractères. Vous avez fourni : ' + length)],
+                });
+                return;
+            }
             
             const lowercase = 'abcdefghijklmnopqrstuvwxyz';
             const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -91,9 +92,9 @@ export default {
                 password = password.substring(0, randomIndex) + randomSymbol + password.substring(randomIndex + 1);
             }
             
-            let strength = 'Weak';
+            let strength = 'Faible';
             let strengthEmoji = '🔴';
-let strengthColor = getColor('error');
+            let strengthColor = getColor('error');
             
             const hasLower = /[a-z]/.test(password);
             const hasUpper = /[A-Z]/.test(password);
@@ -116,29 +117,36 @@ let strengthColor = getColor('error');
             if (hasSymbol) score *= 1.3;
             
             if (score > 80) {
-                strength = 'Very Strong';
+                strength = 'Très fort';
                 strengthEmoji = '🟢';
-strengthColor = getColor('success');
+                strengthColor = getColor('success');
             } else if (score > 60) {
-                strength = 'Strong';
+                strength = 'Fort';
                 strengthEmoji = '🟢';
-strengthColor = getColor('success');
+                strengthColor = getColor('success');
             } else if (score > 40) {
-                strength = 'Good';
+                strength = 'Bon';
                 strengthEmoji = '🟡';
-strengthColor = getColor('warning');
+                strengthColor = getColor('warning');
             } else if (score > 20) {
-                strength = 'Weak';
+                strength = 'Faible';
                 strengthEmoji = '🟠';
-strengthColor = getColor('warning');
+                strengthColor = getColor('warning');
             }
             
+            // Formatage de la liste des types inclus pour éviter les virgules au début
+            const inclusionList = [];
+            if (hasLower) inclusionList.push('Minuscules');
+            if (hasUpper) inclusionList.push('Majuscules');
+            if (hasNumber) inclusionList.push('Chiffres');
+            if (hasSymbol) inclusionList.push('Symboles');
+            
             const embed = successEmbed(
-                '🔑 Generated Password',
-                `**Password:** ||\`${password}\`||\n` +
-                `**Length:** ${password.length} characters\n` +
-                `**Strength:** ${strengthEmoji} ${strength}\n` +
-                `**Contains:** ${hasLower ? 'Lowercase' : ''}${hasUpper ? ', Uppercase' : ''}${hasNumber ? ', Numbers' : ''}${hasSymbol ? ', Symbols' : ''}`
+                '🔑 Mot de passe généré',
+                `**Mot de passe :** ||\`${password}\`||\n` +
+                `**Longueur :** ${password.length} caractères\n` +
+                `**Force :** ${strengthEmoji} ${strength}\n` +
+                `**Contient :** ${inclusionList.join(', ')}`
             ).setColor(strengthColor);
             
             await InteractionHelper.safeEditReply(interaction, { 
@@ -152,7 +160,3 @@ strengthColor = getColor('warning');
         }
     },
 };
-
-
-
-
