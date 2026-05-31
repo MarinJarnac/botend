@@ -8,17 +8,17 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName("shorten")
-        .setDescription("Shorten a URL using is.gd")
+        .setDescription("Raccourcir une URL en utilisant is.gd")
         .addStringOption(option =>
             option
                 .setName("url")
-                .setDescription("The URL to shorten")
+                .setDescription("L'URL à raccourcir")
                 .setRequired(true)
         )
         .addStringOption(option =>
             option
                 .setName("custom")
-                .setDescription("Custom URL ending (optional)")
+                .setDescription("Fin d'URL personnalisée (optionnel)")
                 .setRequired(false)
         )
         .setDMPermission(false),
@@ -44,7 +44,7 @@ export default {
             try {
                 new URL(url);
             } catch (e) {
-                const embed = errorEmbed("Invalid URL", "Invalid URL format. Include http:// or https://");
+                const embed = errorEmbed("URL invalide", "Format d'URL invalide. Incluez http:// ou https://");
                 embed.setColor(getColor('error'));
                 return InteractionHelper.safeEditReply(interaction, {
                     embeds: [embed],
@@ -52,7 +52,7 @@ export default {
             }
 
             if (custom && !/^[a-zA-Z0-9_-]+$/.test(custom)) {
-                const embed = errorEmbed("Invalid Custom URL", "Custom URL can only contain letters, numbers, underscores, and hyphens.");
+                const embed = errorEmbed("URL personnalisée invalide", "L'URL personnalisée ne peut contenir que des lettres, des chiffres, des underscores et des traits d'union.");
                 embed.setColor(getColor('error'));
                 return InteractionHelper.safeEditReply(interaction, {
                     embeds: [embed],
@@ -77,9 +77,9 @@ export default {
                 });
             } catch (networkError) {
                 const message = networkError?.name === 'AbortError'
-                    ? 'The URL shortener timed out. Please try again in a moment.'
-                    : 'Unable to reach the URL shortener service right now. Please try again later.';
-                const embed = errorEmbed('Network Error', message);
+                    ? 'Le service de réduction d\'URL a expiré. Veuillez réessayer dans un instant.'
+                    : 'Impossible de joindre le service de réduction d\'URL pour le moment. Veuillez réessayer plus tard.';
+                const embed = errorEmbed('Erreur réseau', message);
                 embed.setColor(getColor('error'));
                 return InteractionHelper.safeEditReply(interaction, {
                     embeds: [embed],
@@ -89,7 +89,7 @@ export default {
             }
 
             if (!response.ok) {
-                const embed = errorEmbed('URL Shortening Failed', `Shortener service returned HTTP ${response.status}. Please try again later.`);
+                const embed = errorEmbed('Échec du raccourcissement', `Le service a renvoyé une erreur HTTP ${response.status}. Veuillez réessayer plus tard.`);
                 embed.setColor(getColor('error'));
                 return InteractionHelper.safeEditReply(interaction, {
                     embeds: [embed],
@@ -102,26 +102,26 @@ export default {
                 new URL(shortUrl);
             } catch (e) {
                 if (shortUrl.includes("already exists")) {
-                    const embed = errorEmbed("URL Already Taken", "That custom URL is already taken. Try a different one.");
+                    const embed = errorEmbed("URL déjà prise", "Cette URL personnalisée est déjà prise. Essayez-en une autre.");
                     embed.setColor(getColor('error'));
                     return InteractionHelper.safeEditReply(interaction, {
                         embeds: [embed],
                     });
                 } else if (shortUrl.includes("invalid")) {
-                    const embed = errorEmbed("Invalid URL", "Invalid URL. Include http:// or https://");
+                    const embed = errorEmbed("URL invalide", "URL invalide. Incluez http:// ou https://");
                     embed.setColor(getColor('error'));
                     return InteractionHelper.safeEditReply(interaction, {
                         embeds: [embed],
                     });
                 }
-                const embed = errorEmbed("URL Shortening Failed", `URL shortening failed: ${shortUrl}`);
+                const embed = errorEmbed("Échec du raccourcissement", `Le raccourcissement de l'URL a échoué : ${shortUrl}`);
                 embed.setColor(getColor('error'));
                 return InteractionHelper.safeEditReply(interaction, {
                     embeds: [embed],
                 });
             }
 
-            const embed = successEmbed("URL Shortened", `Here's your shortened URL: ${shortUrl}`);
+            const embed = successEmbed("URL raccourcie", `Voici votre URL raccourcie : ${shortUrl}`);
             embed.setColor(getColor('success'));
             await InteractionHelper.safeEditReply(interaction, {
                 embeds: [embed],
@@ -134,5 +134,3 @@ export default {
         }
     },
 };
-
-
