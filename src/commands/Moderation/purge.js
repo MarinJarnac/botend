@@ -9,11 +9,11 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
     .setName("purge")
-    .setDescription("Delete a specific amount of messages")
+    .setDescription("Supprimer un nombre spécifique de messages")
     .addIntegerOption((option) =>
       option
         .setName("amount")
-        .setDescription("Number of messages (1-100)")
+        .setDescription("Nombre de messages (1-100)")
         .setRequired(true),
     )
 .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
@@ -34,8 +34,8 @@ export default {
       return await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "Permission Denied",
-            "You need the `Manage Messages` permission to purge messages.",
+            "Permission refusée",
+            "Vous avez besoin de la permission `Gérer les messages` pour supprimer des messages.",
           ),
         ],
       });
@@ -47,8 +47,8 @@ export default {
       return await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "Invalid Amount",
-            "Please specify a number between 1 and 100.",
+            "Nombre invalide",
+            "Veuillez spécifier un nombre entre 1 et 100.",
           ),
         ],
       });
@@ -61,8 +61,8 @@ export default {
         return await InteractionHelper.safeEditReply(interaction, {
           embeds: [
             warningEmbed(
-              "You're purging messages too fast. Please wait a minute before trying again.",
-              "⏳ Rate Limited"
+              "Vous supprimez des messages trop rapidement. Veuillez patienter une minute avant de réessayer.",
+              "⏳ Limite de requêtes atteinte"
             ),
           ],
           flags: MessageFlags.Ephemeral,
@@ -74,18 +74,18 @@ export default {
       const deletedCount = deleted.size;
 
       const purgeEmbed = createEmbed(
-        "🗑️ Messages Purged (Action Log)",
-        `${deletedCount} messages were deleted by ${interaction.user}.`,
+        "🗑️ Messages supprimés (Log d'action)",
+        `${deletedCount} messages ont été supprimés par ${interaction.user}.`,
       )
 .setColor(getColor('moderation'))
         .addFields(
-          { name: "Channel", value: channel.toString(), inline: true },
+          { name: "Salon", value: channel.toString(), inline: true },
           {
-            name: "Moderator",
+            name: "Modérateur",
             value: `${interaction.user.tag} (${interaction.user.id})`,
             inline: true,
           },
-          { name: "Count", value: `${deletedCount} messages`, inline: false },
+          { name: "Quantité", value: `${deletedCount} messages`, inline: false },
         );
 
       await logEvent({
@@ -107,7 +107,7 @@ export default {
 
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
-          successEmbed(`🗑️ Deleted ${deletedCount} messages in ${channel}.`),
+          successEmbed(`🗑️ ${deletedCount} messages ont été supprimés avec succès dans ${channel}.`),
         ],
 flags: MessageFlags.Ephemeral,
       });
@@ -122,7 +122,7 @@ flags: MessageFlags.Ephemeral,
       await InteractionHelper.safeEditReply(interaction, {
         embeds: [
           errorEmbed(
-            "An unexpected error occurred during message deletion. Note: Messages older than 14 days cannot be bulk deleted.",
+            "Une erreur inattendue est survenue lors de la suppression des messages. Remarque : les messages datant de plus de 14 jours ne peuvent pas être supprimés en masse par un bot.",
           ),
         ],
         flags: MessageFlags.Ephemeral,
@@ -130,6 +130,3 @@ flags: MessageFlags.Ephemeral,
     }
   }
 };
-
-
-
