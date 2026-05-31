@@ -8,12 +8,12 @@ import greetDashboard from './modules/greet_dashboard.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('greet')
-        .setDescription('Manage welcome & goodbye settings')
+        .setDescription('Gérer les paramètres de bienvenue et de départ')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addSubcommand(subcommand =>
             subcommand
                 .setName('dashboard')
-                .setDescription('Open the welcome & goodbye configuration dashboard'),
+                .setDescription('Ouvrir le tableau de bord de configuration des messages de bienvenue et de départ'),
         ),
 
     async execute(interaction, config, client) {
@@ -22,8 +22,8 @@ export default {
                 return await InteractionHelper.safeReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            'Missing Permissions',
-                            'You need the **Manage Server** permission to use `/greet`.',
+                            'Permissions manquantes',
+                            'Vous avez besoin de la permission **Gérer le serveur** pour utiliser `/greet`.',
                         ),
                     ],
                     flags: MessageFlags.Ephemeral,
@@ -36,12 +36,12 @@ export default {
                 case 'dashboard':
                     return await greetDashboard.execute(interaction, config, client);
                 default:
-                    logger.warn(`Unknown /greet subcommand: ${subcommand}`);
+                    logger.warn(`Sous-commande /greet inconnue : ${subcommand}`);
             }
         } catch (error) {
             if (error instanceof TitanBotError) {
                 return await InteractionHelper.safeReply(interaction, {
-                    embeds: [errorEmbed('Configuration Error', error.userMessage || 'Something went wrong.')],
+                    embeds: [errorEmbed('Erreur de configuration', error.userMessage || 'Une erreur est survenue.')],
                     flags: MessageFlags.Ephemeral,
                 });
             }
