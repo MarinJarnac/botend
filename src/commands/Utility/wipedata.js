@@ -5,28 +5,29 @@ import { logger } from '../../utils/logger.js';
 import { handleInteractionError } from '../../utils/errorHandler.js';
 
 import { InteractionHelper } from '../../utils/interactionHelper.js';
+
 export default {
     data: new SlashCommandBuilder()
-        .setName('wipedata')
-        .setDescription('Delete all your personal data from the bot (irreversible)'),
+        .setName('effacerdonnees')
+        .setDescription('Supprimer toutes vos données personnelles du bot (irréversible)'),
 
     async execute(interaction, guildConfig, client) {
         try {
             const warningMessage = 
-                `⚠️ **THIS ACTION IS IRREVERSIBLE!** ⚠️\n\n` +
-                `This will permanently delete **ALL** your data from this server including:\n` +
-                `• 💰 Economy balance (wallet & bank)\n` +
-                `• 📊 Levels and XP\n` +
-                `• 🎒 Inventory items\n` +
-                `• 🛍️ Shop purchases\n` +
-                `• 🎂 Birthday information\n` +
-                `• 🔢 Counter data\n` +
-                `• 📋 All other personal data\n\n` +
-                `**This cannot be undone. Are you absolutely sure?**`;
+                `⚠️ **CETTE ACTION EST IRRÉVERSIBLE !** ⚠️\n\n` +
+                `Ceci supprimera définitivement **TOUTES** vos données de ce serveur, notamment :\n` +
+                `• 💰 Solde économique (portefeuille & banque)\n` +
+                `• 📊 Niveaux et XP\n` +
+                `• 🎒 Objets de l'inventaire\n` +
+                `• 🛍️ Achats en boutique\n` +
+                `• 🎂 Informations d'anniversaire\n` +
+                `• 🔢 Données de compteur\n` +
+                `• 📋 Toutes les autres données personnelles\n\n` +
+                `**Cette action ne peut pas être annulée. Êtes-vous absolument sûr(e) ?**`;
 
-            const embed = warningEmbed(warningMessage, '🗑️ Wipe All Data');
+            const embed = warningEmbed(warningMessage, '🗑️ Effacer toutes les données');
 
-            const confirmButtons = getConfirmationButtons('wipedata');
+            const confirmButtons = getConfirmationButtons('effacerdonnees');
 
             await InteractionHelper.safeReply(interaction, {
                 embeds: [embed],
@@ -44,16 +45,12 @@ export default {
                 stack: error.stack,
                 userId: interaction.user.id,
                 guildId: interaction.guildId,
-                commandName: 'wipedata'
+                commandName: 'effacerdonnees'
             });
             await handleInteractionError(interaction, error, {
-                commandName: 'wipedata',
+                commandName: 'effacerdonnees',
                 source: 'wipedata_command'
             });
         }
     }
 };
-
-
-
-
