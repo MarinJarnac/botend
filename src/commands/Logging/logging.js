@@ -10,75 +10,75 @@ import filter from './modules/logging_filter.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('logging')
-        .setDescription('Manage audit logging for this server.')
+        .setDescription('Gérer les logs d\'audit pour ce serveur.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false)
         .addSubcommand((subcommand) =>
             subcommand
                 .setName('dashboard')
-                .setDescription('Open the interactive logging dashboard — view status and toggle event categories.'),
+                .setDescription('Ouvrir le tableau de bord interactif des logs — voir le statut et basculer les catégories.'),
         )
         .addSubcommand((subcommand) =>
             subcommand
                 .setName('setchannel')
-                .setDescription('Set the audit log channel for this server.')
+                .setDescription('Définir le salon des logs d\'audit pour ce serveur.')
                 .addChannelOption((option) =>
                     option
                         .setName('channel')
-                        .setDescription('The text channel for audit logs.')
+                        .setDescription('Le salon textuel pour les logs d\'audit.')
                         .addChannelTypes(ChannelType.GuildText)
                         .setRequired(false),
                 )
                 .addBooleanOption((option) =>
                     option
                         .setName('disable')
-                        .setDescription('Set to True to disable audit logging entirely.')
+                        .setDescription('Définir sur Vrai pour désactiver complètement les logs d\'audit.')
                         .setRequired(false),
                 ),
         )
         .addSubcommandGroup((group) =>
             group
                 .setName('filter')
-                .setDescription('Manage the log ignore list (users and channels to skip).')
+                .setDescription('Gérer la liste d\'exclusion des logs (utilisateurs et salons à ignorer).')
                 .addSubcommand((subcommand) =>
                     subcommand
                         .setName('add')
-                        .setDescription('Add a user or channel to the log ignore list.')
+                        .setDescription('Ajouter un utilisateur ou un salon à la liste d\'exclusion des logs.')
                         .addStringOption((option) =>
                             option
                                 .setName('type')
-                                .setDescription('Whether to ignore a user or channel.')
+                                .setDescription('Choisir s\'il faut ignorer un utilisateur ou un salon.')
                                 .setRequired(true)
                                 .addChoices(
-                                    { name: 'User', value: 'user' },
-                                    { name: 'Channel', value: 'channel' },
+                                    { name: 'Utilisateur', value: 'user' },
+                                    { name: 'Salon', value: 'channel' },
                                 ),
                         )
                         .addStringOption((option) =>
                             option
                                 .setName('id')
-                                .setDescription('The ID of the user or channel to ignore.')
+                                .setDescription('L\'ID de l\'utilisateur ou du salon à ignorer.')
                                 .setRequired(true),
                         ),
                 )
                 .addSubcommand((subcommand) =>
                     subcommand
                         .setName('remove')
-                        .setDescription('Remove a user or channel from the log ignore list.')
+                        .setDescription('Retirer un utilisateur ou un salon de la liste d\'exclusion des logs.')
                         .addStringOption((option) =>
                             option
                                 .setName('type')
-                                .setDescription('Whether this is a user or channel.')
+                                .setDescription('Choisir s\'il s\'agit d\'un utilisateur ou d\'un salon.')
                                 .setRequired(true)
                                 .addChoices(
-                                    { name: 'User', value: 'user' },
-                                    { name: 'Channel', value: 'channel' },
+                                    { name: 'Utilisateur', value: 'user' },
+                                    { name: 'Salon', value: 'channel' },
                                 ),
                         )
                         .addStringOption((option) =>
                             option
                                 .setName('id')
-                                .setDescription('The ID of the user or channel to remove from the ignore list.')
+                                .setDescription('L\'ID de l\'utilisateur ou du salon à retirer de la liste d\'exclusion.')
                                 .setRequired(true),
                         ),
                 ),
@@ -86,7 +86,7 @@ export default {
 
     async execute(interaction, config, client) {
         try {
-            // setchannel and filter both need a reply deferred before their logic runs
+            // setchannel et filter ont tous deux besoin d'un "deferred reply" avant l'exécution de leur logique
             const subcommandGroup = interaction.options.getSubcommandGroup(false);
             const subcommand = interaction.options.getSubcommand();
 
@@ -105,12 +105,12 @@ export default {
             }
 
             await InteractionHelper.safeEditReply(interaction, {
-                embeds: [errorEmbed('Unknown Subcommand', 'This subcommand is not recognised.')],
+                embeds: [errorEmbed('Sous-commande inconnue', 'Cette sous-commande n\'est pas reconnue.')],
             });
         } catch (error) {
             logger.error('logging command error:', error);
             await InteractionHelper.safeReply(interaction, {
-                embeds: [errorEmbed('Error', 'An unexpected error occurred.')],
+                embeds: [errorEmbed('Erreur', 'Une erreur inattendue est survenue.')],
                 ephemeral: true,
             }).catch(() => {});
         }
