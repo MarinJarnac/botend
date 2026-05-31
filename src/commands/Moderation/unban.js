@@ -5,19 +5,20 @@ import { logger } from '../../utils/logger.js';
 import { ModerationService } from '../../services/moderationService.js';
 import { handleInteractionError } from '../../utils/errorHandler.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
+
 export default {
     data: new SlashCommandBuilder()
         .setName("unban")
-        .setDescription("Unban a user from the server")
+        .setDescription("Révoquer le bannissement d'un utilisateur du serveur")
         .addUserOption(option =>
             option
                 .setName("target")
-                .setDescription("The user to unban (can be ID or mention)")
+                .setDescription("L'utilisateur à débannir (ID ou mention)")
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName("reason")
-                .setDescription("Reason for the unban")
+                .setDescription("Raison du débannissement")
                 .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
@@ -36,7 +37,7 @@ export default {
 
         try {
                 const targetUser = interaction.options.getUser("target");
-                const reason = interaction.options.getString("reason") || "No reason provided";
+                const reason = interaction.options.getString("reason") || "Aucune raison fournie";
 
                 
                 const result = await ModerationService.unbanUser({
@@ -49,8 +50,8 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         successEmbed(
-                            "✅ User Unbanned",
-                            `Successfully unbanned **${targetUser.tag}** from the server.\n\n**Reason:** ${reason}\n**Case ID:** #${result.caseId}`
+                            "✅ Utilisateur débanni",
+                            `Le bannissement de **${targetUser.tag}** a été révoqué avec succès.\n\n**Raison :** ${reason}\n**ID du cas :** #${result.caseId}`
                         )
                     ]
                 });
@@ -60,6 +61,3 @@ export default {
         }
     }
 };
-
-
-
