@@ -7,10 +7,10 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('hexcolor')
-        .setDescription('Generate a random hex color with preview')
+        .setDescription('Générer une couleur hexadécimale aléatoire avec aperçu')
         .addStringOption(option =>
             option.setName('color')
-                .setDescription('Specific hex color (e.g., #FF5733 or FF5733)')
+                .setDescription('Couleur HEX spécifique (ex: #FF5733 ou FF5733)')
                 .setRequired(false)),
 
     async execute(interaction) {
@@ -27,7 +27,7 @@ export default {
                     hexColor = hexColor.replace('#', '');
                     if (!/^[0-9A-Fa-f]{3,6}$/.test(hexColor)) {
                         return InteractionHelper.safeEditReply(interaction, {
-                            embeds: [errorEmbed('❌ Invalid Hex Color', 'Please provide a valid hex code.\n\n**Valid formats:**\n• `#FF5733` (with hash)\n• `FF5733` (without hash)\n• `F57` (3-digit shorthand)\n\n**Invalid:** `#GG5733` (G is not a hex digit)')],
+                            embeds: [errorEmbed('❌ Code HEX invalide', 'Veuillez fournir un code hexadécimal valide.\n\n**Formats valides :**\n• `#FF5733` (avec hashtag)\n• `FF5733` (sans hashtag)\n• `F57` (format raccourci à 3 chiffres)\n\n**Invalide :** `#GG5733` (G n\'est pas un chiffre hexadécimal)')],
                         });
                     }
 
@@ -50,22 +50,22 @@ export default {
                 const colorName = getColorName(hexColor);
 
                 const embed = successEmbed(
-                    '🎨 Color Information',
-                    `**Hex:** \`${hexColor}\`\n` +
-                    `**RGB:** \`rgb(${r}, ${g}, ${b})\`\n` +
-                    `**HSL:** \`${rgbToHsl(r, g, b)}\`\n` +
-                    `**Name:** ${colorName || 'Custom Color'}`
+                    '🎨 Informations sur la couleur',
+                    `**Hex :** \`${hexColor}\`\n` +
+                    `**RGB :** \`rgb(${r}, ${g}, ${b})\`\n` +
+                    `**HSL :** \`${rgbToHsl(r, g, b)}\`\n` +
+                    `**Nom :** ${colorName || 'Couleur personnalisée'}`
                 )
                     .setColor(hexColor)
                     .setImage(colorPreviewUrl);
 
                 if (isRandom) {
-                    embed.setFooter({ text: '✨ Randomly generated color' });
+                    embed.setFooter({ text: '✨ Couleur générée aléatoirement' });
                 }
 
                 await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
             },
-            'Failed to generate color information. Please try again.',
+            'Impossible de générer les informations de la couleur. Veuillez réessayer.',
             {
                 autoDefer: true,
                 deferOptions: { flags: MessageFlags.Ephemeral }
@@ -80,7 +80,7 @@ function rgbToHsl(r, g, b) {
     let h, s, l = (max + min) / 2;
 
     if (max === min) {
-h = s = 0;
+        h = s = 0;
     } else {
         const d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -97,24 +97,24 @@ h = s = 0;
 
 function getColorName(hex) {
     const colors = {
-        '#FF0000': 'Red',
-        '#00FF00': 'Green',
-        '#0000FF': 'Blue',
-        '#FFFF00': 'Yellow',
+        '#FF0000': 'Rouge',
+        '#00FF00': 'Vert',
+        '#0000FF': 'Bleu',
+        '#FFFF00': 'Jaune',
         '#FF00FF': 'Magenta',
         '#00FFFF': 'Cyan',
-        '#000000': 'Black',
-        '#FFFFFF': 'White',
-        '#808080': 'Gray',
+        '#000000': 'Noir',
+        '#FFFFFF': 'Blanc',
+        '#808080': 'Gris',
         '#FFA500': 'Orange',
-        '#800080': 'Purple',
-        '#A52A2A': 'Brown',
-        '#FFC0CB': 'Pink',
-        '#008000': 'Dark Green',
-        '#000080': 'Navy',
-        '#FFD700': 'Gold',
-        '#C0C0C0': 'Silver',
-        '#FF6347': 'Tomato',
+        '#800080': 'Violet',
+        '#A52A2A': 'Marron',
+        '#FFC0CB': 'Rose',
+        '#008000': 'Vert Foncé',
+        '#000080': 'Bleu Marine',
+        '#FFD700': 'Or',
+        '#C0C0C0': 'Argent',
+        '#FF6347': 'Tomate',
         '#40E0D0': 'Turquoise',
         '#E6E6FA': 'Lavender'
     };
@@ -137,8 +137,5 @@ function getColorName(hex) {
         }
     }
     
-    return minDistance < 1000000 ? `Close to ${closestColor}` : null;
+    return minDistance < 1000000 ? `Proche du ${closestColor}` : null;
 }
-
-
-
