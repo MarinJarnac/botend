@@ -7,11 +7,11 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
     .setName("roll")
-    .setDescription("Rolls dice using standard notation (e.g., 2d20, 1d6 + 5).")
+    .setDescription("Lance des dés en utilisant la notation standard (ex: 2d20, 1d6 + 5).")
     .addStringOption((option) =>
       option
         .setName("notation")
-        .setDescription("The dice notation (e.g., 2d6, 1d20 + 4)")
+        .setDescription("La notation des dés (ex: 2d6, 1d20 + 4)")
         .setRequired(true)
         .setMaxLength(50),
     ),
@@ -32,7 +32,7 @@ export default {
         throw new TitanBotError(
           `Invalid dice notation: ${notation}`,
           ErrorTypes.USER_INPUT,
-          'Invalid notation. Use format like `1d20` or `3d6+5`.'
+          'Notation invalide. Utilisez un format comme `1d20` ou `3d6+5`.'
         );
       }
 
@@ -45,7 +45,7 @@ export default {
         throw new TitanBotError(
           `Too many dice requested: ${numDice}`,
           ErrorTypes.VALIDATION,
-          'Please keep the number of dice between 1 and 20.'
+          'Veuillez choisir un nombre de dés compris entre 1 et 20.'
         );
       }
 
@@ -53,7 +53,7 @@ export default {
         throw new TitanBotError(
           `Invalid number of sides: ${numSides}`,
           ErrorTypes.VALIDATION,
-          'Please keep the number of sides between 1 and 1000.'
+          'Veuillez choisir un nombre de faces entre 1 et 1000.'
         );
       }
 
@@ -69,12 +69,12 @@ export default {
       const finalTotal = totalRoll + modifier;
 
       const resultsDetail =
-        numDice > 1 ? `**Rolls:** ${rolls.join(" + ")}\n` : "";
+        numDice > 1 ? `**Dés :** ${rolls.join(" + ")}\n` : "";
       const modifierText = modifier !== 0 ? ` + (${modifier})` : "";
 
       const embed = successEmbed(
-        `🎲 Rolling ${numDice}d${numSides}${modifier !== 0 ? match[3] : ""}`,
-        `${resultsDetail}**Total Roll:** ${totalRoll}${modifierText} = **${finalTotal}**`,
+        `🎲 Lancement : ${numDice}d${numSides}${modifier !== 0 ? match[3] : ""}`,
+        `${resultsDetail}**Total des dés :** ${totalRoll}${modifierText} = **${finalTotal}**`,
       );
 
       await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
@@ -87,6 +87,3 @@ export default {
     }
   },
 };
-
-
-
