@@ -10,11 +10,11 @@ const EMBED_DESCRIPTION_LIMIT = 4096;
 export default {
     data: new SlashCommandBuilder()
     .setName("fight")
-    .setDescription("Starts a simulated 1v1 text-based battle.")
+    .setDescription("Lance une simulation de combat 1v1 textuel.")
     .addUserOption((option) =>
       option
         .setName("opponent")
-        .setDescription("The user to fight.")
+        .setDescription("L'adversaire à affronter.")
         .setRequired(true),
     ),
   category: 'Fun',
@@ -29,8 +29,8 @@ export default {
       
       if (challenger.id === opponent.id) {
         const embed = warningEmbed(
-          `**${challenger.username}**, you can't fight yourself! That's a draw before it even starts.`,
-          "⚔️ Invalid Challenge"
+          `**${challenger.username}**, tu ne peux pas t'affronter toi-même ! C'est un match nul avant même d'avoir commencé.`,
+          "⚔️ Défi Invalide"
         );
         return await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
       }
@@ -38,8 +38,8 @@ export default {
       
       if (opponent.bot) {
         const embed = warningEmbed(
-          "You can't fight bots! Challenge a real person instead.",
-          "⚔️ Invalid Opponent"
+          "Tu ne peux pas affronter de bots ! Défie plutôt une vraie personne.",
+          "⚔️ Adversaire Invalide"
         );
         return await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
       }
@@ -51,25 +51,25 @@ export default {
 
       const log = [];
       log.push(
-        `💥 **${challenger.username}** challenges **${opponent.username}** to a duel! (Best of ${rounds} rounds)`,
+        `💥 **${challenger.username}** défie **${opponent.username}** en duel ! (Au meilleur de ${rounds} manches)`,
       );
 
       for (let i = 1; i <= rounds; i++) {
         const attacker = rand(0, 1) === 0 ? challenger : opponent;
         const target = attacker.id === challenger.id ? opponent : challenger;
         const action = [
-          "throws a wild punch",
-          "lands a critical hit",
-          "uses a weak spell",
-          "parries and counterattacks",
+          "lance un coup de poing féroce",
+          "inflige un coup critique",
+          "utilise un sortilège mineur",
+          "parre et contre-attaque",
         ][rand(0, 3)];
         log.push(
-          `\n**Round ${i}:** ${attacker.username} ${action} on ${target.username} for ${rand(1, damage)} damage!`,
+          `\n**Manche ${i} :** ${attacker.username} ${action} sur ${target.username} et inflige ${rand(1, damage)} points de dégâts !`,
         );
       }
 
       const outcomeText = log.join("\n");
-      const winnerText = `👑 **${winner.username}** has defeated ${loser.username} and claims the victory!`;
+      const winnerText = `👑 **${winner.username}** a terrassé ${loser.username} et remporte la victoire !`;
       const fullDescription = `${outcomeText}\n\n${winnerText}`;
 
       const description = fullDescription.length <= EMBED_DESCRIPTION_LIMIT
@@ -78,7 +78,7 @@ export default {
 
       const embed = successEmbed(
         description,
-        "🏆 Duel Complete!"
+        "🏆 Duel Terminé !"
       );
 
       await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
@@ -92,8 +92,3 @@ export default {
     }
   },
 };
-
-
-
-
-
