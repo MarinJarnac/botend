@@ -7,8 +7,8 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('verify')
-        .setDescription('Verify yourself and gain access to the server'),
+        .setName('verification')
+        .setDescription('Vérifiez votre compte pour accéder au serveur'),
 
     async execute(interaction, config, client) {
         const wrappedExecute = withErrorHandling(async () => {
@@ -22,15 +22,15 @@ export default {
             if (!result.success) {
                 if (result.alreadyVerified) {
                     return await InteractionHelper.safeReply(interaction, {
-                        embeds: [infoEmbed("Already Verified", "You are already verified.")],
+                        embeds: [infoEmbed("Déjà vérifié", "Vous êtes déjà vérifié sur ce serveur.")],
                         flags: MessageFlags.Ephemeral
                     });
                 }
 
                 return await InteractionHelper.safeReply(interaction, {
                     embeds: [errorEmbed(
-                        "Verification Failed",
-                        "An error occurred during verification. Please try again or contact an administrator."
+                        "Échec de la vérification",
+                        "Une erreur est survenue lors de la vérification. Veuillez réessayer ou contacter un administrateur."
                     )],
                     flags: MessageFlags.Ephemeral
                 });
@@ -38,12 +38,12 @@ export default {
 
             await InteractionHelper.safeReply(interaction, {
                 embeds: [successEmbed(
-                    "Verification Complete",
-                    `You have been verified and given the **${result.roleName}** role! Welcome to the server! 🎉`
+                    "Vérification terminée",
+                    `Vous avez été vérifié et avez reçu le rôle **${result.roleName}** ! Bienvenue sur le serveur ! 🎉`
                 )],
                 flags: MessageFlags.Ephemeral
             });
-        }, { command: 'verify' });
+        }, { command: 'verification' });
 
         return await wrappedExecute(interaction, config, client);
     }
