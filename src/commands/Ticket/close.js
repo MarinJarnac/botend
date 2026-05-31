@@ -6,15 +6,16 @@ import { handleInteractionError } from '../../utils/errorHandler.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
 import { getTicketPermissionContext } from '../../utils/ticketPermissions.js';
 import { closeTicket } from '../../services/ticket.js';
+
 export default {
     data: new SlashCommandBuilder()
         .setName("close")
-        .setDescription("Closes the current ticket.")
+        .setDescription("Ferme le ticket actuel.")
         .setDMPermission(false)
         .addStringOption((option) =>
             option
                 .setName("reason")
-                .setDescription("The reason for closing the ticket.")
+                .setDescription("La raison de la fermeture du ticket.")
                 .setRequired(false),
         ),
 
@@ -31,8 +32,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Not a Ticket Channel",
-                            "This command can only be used in a valid ticket channel.",
+                            "Salon invalide",
+                            "Cette commande peut uniquement être utilisée dans un salon de ticket valide.",
                         ),
                     ],
                 });
@@ -42,8 +43,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Permission Denied",
-                            "You need the `Manage Channels` permission, the configured `Ticket Staff Role`, or be the ticket creator to close this ticket.",
+                            "Permission refusée",
+                            "Vous devez disposer de la permission `Gérer les salons`, du `Rôle Staff` configuré, ou être le créateur du ticket pour le fermer.",
                         ),
                     ],
                 });
@@ -52,7 +53,7 @@ export default {
             const channel = interaction.channel;
             const reason =
                 interaction.options?.getString("reason") ||
-                "Closed via command without a specific reason.";
+                "Fermé via la commande sans raison spécifique.";
 
             const result = await closeTicket(channel, interaction.user, reason);
             
@@ -66,8 +67,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Not a Ticket Channel",
-                            result.error || "This command can only be used in a valid ticket channel.",
+                            "Salon invalide",
+                            result.error || "Cette commande peut uniquement être utilisée dans un salon de ticket valide.",
                         ),
                     ],
                 });
@@ -76,8 +77,8 @@ export default {
             await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     successEmbed(
-                        "Ticket Closed!",
-                        "This ticket has been closed successfully.",
+                        "Ticket fermé !",
+                        "Ce ticket a été fermé avec succès.",
                     ),
                 ],
             });
@@ -108,6 +109,3 @@ export default {
         }
     },
 };
-
-
-
