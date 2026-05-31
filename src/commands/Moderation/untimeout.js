@@ -5,17 +5,18 @@ import { logger } from '../../utils/logger.js';
 import { ModerationService } from '../../services/moderationService.js';
 import { handleInteractionError } from '../../utils/errorHandler.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
+
 export default {
     data: new SlashCommandBuilder()
         .setName("untimeout")
-        .setDescription("Remove timeout from a user")
+        .setDescription("Retirer l'exclusion temporaire d'un utilisateur")
         .addUserOption((option) =>
             option
                 .setName("target")
-                .setDescription("User to untimeout")
+                .setDescription("L'utilisateur dont vous souhaitez annuler l'exclusion")
                 .setRequired(true),
         )
-.setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     category: "moderation",
 
     async execute(interaction, config, client) {
@@ -43,7 +44,7 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         successEmbed(
-                            `🔓 **Removed timeout** from ${targetUser.tag}`,
+                            `🔓 **Exclusion temporaire annulée** pour ${targetUser.tag}`,
                         ),
                     ],
                 });
@@ -53,6 +54,3 @@ export default {
         }
     }
 };
-
-
-
