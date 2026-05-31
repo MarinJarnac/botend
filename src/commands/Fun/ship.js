@@ -18,18 +18,18 @@ function stringToHash(str) {
 export default {
     data: new SlashCommandBuilder()
     .setName("ship")
-    .setDescription("Calculate the compatibility score between two people.")
+    .setDescription("Calcule le score de compatibilité amoureuse entre deux personnes.")
     .addStringOption((option) =>
       option
         .setName("name1")
-        .setDescription("The first name or user.")
+        .setDescription("Le premier nom ou utilisateur.")
         .setRequired(true)
         .setMaxLength(100),
     )
     .addStringOption((option) =>
       option
         .setName("name2")
-        .setDescription("The second name or user.")
+        .setDescription("Le second nom ou utilisateur.")
         .setRequired(true)
         .setMaxLength(100),
     ),
@@ -47,7 +47,7 @@ export default {
         throw new TitanBotError(
           'Empty names provided to ship command',
           ErrorTypes.USER_INPUT,
-          'Please provide valid names for both people!'
+          'Veuillez fournir des noms valides pour les deux personnes !'
         );
       }
 
@@ -58,8 +58,8 @@ export default {
       
       if (name1.toLowerCase() === name2.toLowerCase()) {
         const embed = warningEmbed(
-          "💖 Ship Score",
-          `**${name1}** can't be shipped with themselves! Please choose two different people.`
+          `**${name1}** ne peut pas former un couple avec soi-même ! Veuillez choisir deux personnes différentes.`,
+          "💖 Score de Compatibilité"
         );
         return await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
       }
@@ -70,17 +70,17 @@ export default {
 
       let description;
       if (score === 100) {
-        description = "Soulmates! It's destiny, they belong together!";
+        description = "Âmes sœurs ! C'est le destin, ils sont faits l'un pour l'autre !";
       } else if (score >= 80) {
-        description = "A perfect match! Get the wedding bells ready!";
+        description = "Le couple parfait ! Préparez la pièce montée et les alliances !";
       } else if (score >= 60) {
-        description = "Solid chemistry. Definitely worth exploring!";
+        description = "Une très bonne alchimie. Ça vaut vraiment le coup d'essayer !";
       } else if (score >= 40) {
-        description = "Just friends status. Maybe with time?";
+        description = "Juste bons amis. Peut-être qu'avec le temps... ?";
       } else if (score >= 20) {
-        description = "It's a struggle. They might need space.";
+        description = "C'est compliqué. Ils feraient mieux de garder leurs distances.";
       } else {
-        description = "Zero compatibility. Run for the hills!";
+        description = "Compatibilité zéro. Fuyez le plus loin possible !";
       }
 
       const progressBar =
@@ -88,8 +88,8 @@ export default {
         "░".repeat(10 - Math.floor(score / 10));
 
       const embed = successEmbed(
-        `💖 Ship Score: ${name1} vs ${name2}`,
-        `Compatibility: **${score}%**\n\n\`${progressBar}\`\n\n*${description}*`,
+        `💖 Score de Compatibilité : ${name1} vs ${name2}`,
+        `Compatibilité : **${score}%**\n\n\`${progressBar}\`\n\n*${description}*`,
       );
 
       await InteractionHelper.safeEditReply(interaction, { embeds: [embed] });
@@ -103,7 +103,3 @@ export default {
     }
   },
 };
-
-
-
-
