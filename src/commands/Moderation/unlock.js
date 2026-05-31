@@ -9,7 +9,7 @@ export default {
     data: new SlashCommandBuilder()
         .setName("unlock")
         .setDescription(
-            "Unlocks the current channel (allows @everyone to send messages again).",
+            "Déverrouille le salon actuel (autorise à nouveau @everyone à envoyer des messages).",
         )
 .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
     category: "moderation",
@@ -33,8 +33,8 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "Permission Denied",
-                        "You need the `Manage Channels` permission to unlock channels.",
+                        "Permission refusée",
+                        "Vous avez besoin de la permission `Gérer les salons` pour déverrouiller des salons.",
                     ),
                 ],
             });
@@ -53,8 +53,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Channel Already Unlocked",
-                            `${channel} is not explicitly locked (everyone can already send messages).`,
+                            "Salon déjà déverrouillé",
+                            `Le salon ${channel} n'est pas explicitement verrouillé (tout le monde peut déjà y envoyer des messages).`,
                         ),
                     ],
                 });
@@ -65,23 +65,23 @@ export default {
                 { SendMessages: true },
                 {
                     type: 0,
-                    reason: `Channel unlocked by ${interaction.user.tag}`,
-},
+                    reason: `Salon déverrouillé par ${interaction.user.tag}`,
+                },
             );
 
             const unlockEmbed = createEmbed(
-                "🔓 Channel Unlocked (Action Log)",
-                `${channel} has been unlocked by ${interaction.user}.`,
+                "🔓 Salon déverrouillé (Log d'action)",
+                `Le salon ${channel} a été déverrouillé par ${interaction.user}.`,
             )
 .setColor(getColor('success'))
                 .addFields(
                     {
-                        name: "Channel",
+                        name: "Salon",
                         value: channel.toString(),
                         inline: true,
                     },
                     {
-                        name: "Moderator",
+                        name: "Modérateur",
                         value: `${interaction.user.tag} (${interaction.user.id})`,
                         inline: true,
                     },
@@ -96,7 +96,7 @@ export default {
                     executor: `${interaction.user.tag} (${interaction.user.id})`,
                     metadata: {
                         channelId: channel.id,
-                        category: channel.parent?.name || 'None'
+                        category: channel.parent?.name || 'Aucune'
                     }
                 }
             });
@@ -104,8 +104,8 @@ export default {
             await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     successEmbed(
-                        `🔓 **Channel Unlocked**`,
-                        `${channel} is now unlocked. You may speak now.`,
+                        `🔓 **Salon déverrouillé**`,
+                        `Le salon ${channel} est désormais déverrouillé. Vous pouvez de nouveau écrire.`,
                     ),
                 ],
             });
@@ -114,13 +114,10 @@ export default {
             await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "An unexpected error occurred while trying to unlock the channel. Check my permissions (I need 'Manage Channels').",
+                        "Une erreur inattendue est survenue lors du déverrouillage du salon. Vérifiez mes permissions (j'ai besoin de la permission 'Gérer les salons').",
                     ),
                 ],
             });
         }
     }
 };
-
-
-
