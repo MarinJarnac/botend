@@ -8,7 +8,7 @@ import { InteractionHelper } from '../../../utils/interactionHelper.js';
 export default {
     async execute(interaction, config, client) {
         const category = interaction.options.getChannel('category');
-        const nameTemplate = interaction.options.getString('channel_name') || "{username}'s Room";
+        const nameTemplate = interaction.options.getString('channel_name') || "Salon de {username}";
         const userLimit = interaction.options.getInteger('user_limit') || 0;
         const bitrate = interaction.options.getInteger('bitrate') || 64;
         const guildId = interaction.guild.id;
@@ -36,14 +36,14 @@ export default {
             });
 
             const embed = successEmbed(
-                `Created trigger channel: ${triggerChannel}\n\n` +
-                `**Settings:**\n` +
-                `• Temporary Channel Name Template: \`${nameTemplate}\`\n` +
-                `• User Limit: ${userLimit === 0 ? 'No limit' : userLimit + ' users'}\n` +
-                `• Bitrate: ${bitrate} kbps\n` +
-                `${category ? `• Category: ${category.name}` : '• Category: None (root level)'}\n\n` +
-                `When users join this channel, a temporary voice channel will be created for them.`,
-                '✅ Join to Create Setup Complete'
+                `Salon de déclenchement créé : ${triggerChannel}\n\n` +
+                `**Paramètres :**\n` +
+                `• Modèle de nom des salons temporaires : \`${nameTemplate}\`\n` +
+                `• Limite d'utilisateurs : ${userLimit === 0 ? 'Aucune limite' : userLimit + ' utilisateurs'}\n` +
+                `• Bitrate : ${bitrate} kbps\n` +
+                `${category ? `• Catégorie : ${category.name}` : '• Catégorie : Aucune (racine)'}\n\n` +
+                `Lorsque les utilisateurs rejoindront ce salon, un salon vocal temporaire sera créé pour eux.`,
+                '✅ Configuration Join to Create terminée'
             );
 
             try {
@@ -53,29 +53,26 @@ export default {
                     await InteractionHelper.safeReply(interaction, { embeds: [embed], flags: MessageFlags.Ephemeral });
                 }
             } catch (responseError) {
-                logger.error('Error responding to interaction:', responseError);
+                logger.error('Erreur lors de la réponse à l\'interaction :', responseError);
                 
                 try {
                     if (!interaction.replied) {
                         await InteractionHelper.safeReply(interaction, { embeds: [embed], flags: MessageFlags.Ephemeral });
                     }
                 } catch (e) {
-                    logger.error('All response attempts failed:', e);
+                    logger.error('Toutes les tentatives de réponse ont échoué :', e);
                 }
             }
         } catch (error) {
             if (error instanceof TitanBotError) {
                 throw error;
             }
-            logger.error('Error in JoinToCreate setup:', error);
+            logger.error('Erreur dans la configuration JoinToCreate :', error);
             throw new TitanBotError(
-                `Setup failed: ${error.message}`,
+                `Échec de la configuration : ${error.message}`,
                 ErrorTypes.DISCORD_API,
-                'Failed to set up Join to Create system.'
+                'Impossible de configurer le système Join to Create.'
             );
         }
     }
 };
-
-
-
