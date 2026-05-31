@@ -8,16 +8,16 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
         .setName("masskick")
-        .setDescription("Kick multiple users from the server at once")
+        .setDescription("Expulser plusieurs utilisateurs du serveur simultanément")
         .addStringOption(option =>
             option
                 .setName("users")
-                .setDescription("User IDs or mentions to kick (separated by spaces or commas)")
+                .setDescription("Identifiants (ID) ou mentions des utilisateurs (séparés par des espaces ou virgules)")
                 .setRequired(true)
         )
         .addStringOption(option =>
             option.setName("reason")
-                .setDescription("Reason for the mass kick")
+                .setDescription("Raison de l'expulsion de masse")
                 .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
@@ -38,15 +38,15 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "Permission Denied",
-                        "You do not have permission to kick members."
+                        "Permission refusée",
+                        "Vous n'avez pas la permission d'expulser des membres."
                     ),
                 ],
             });
         }
 
         const usersInput = interaction.options.getString("users");
-        const reason = interaction.options.getString("reason") || "Mass kick - No reason provided";
+        const reason = interaction.options.getString("reason") || "Expulsion de masse - Aucune raison fournie";
 
         try {
             
@@ -56,8 +56,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         warningEmbed(
-                            "You're performing mass kicks too fast. Please wait a minute before trying again.",
-                            "⏳ Rate Limited"
+                            "Vous effectuez des expulsions de masse trop rapidement. Veuillez patienter une minute avant de réessayer.",
+                            "⏳ Limite de requêtes atteinte"
                         ),
                     ],
                     flags: MessageFlags.Ephemeral,
@@ -65,17 +65,17 @@ export default {
             }
 
             const userIds = usersInput
-.replace(/<@!?(\d+)>/g, '$1')
-.split(/[\s,]+/)
-.filter(id => id && /^\d+$/.test(id))
-.slice(0, 20);
+                .replace(/<@!?(\d+)>/g, '$1')
+                .split(/[\s,]+/)
+                .filter(id => id && /^\d+$/.test(id))
+                .slice(0, 20);
 
             if (userIds.length === 0) {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Invalid Users",
-                            "Please provide valid user IDs or mentions. Maximum 20 users at once."
+                            "Utilisateurs invalides",
+                            "Veuillez fournir des ID ou mentions d'utilisateurs valides. Maximum 20 utilisateurs à la fois."
                         ),
                     ],
                 });
@@ -85,8 +85,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Cannot Kick Self",
-                            "You cannot include yourself in a mass kick."
+                            "Impossible de s'expulser",
+                            "Vous ne pouvez pas vous inclure dans une expulsion de masse."
                         ),
                     ],
                 });
@@ -96,8 +96,8 @@ export default {
                 return await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         errorEmbed(
-                            "Cannot Kick Bot",
-                            "You cannot include the bot in a mass kick."
+                            "Impossible d'expulser le bot",
+                            "Vous ne pouvez pas inclure le bot dans une expulsion de masse."
                         ),
                     ],
                 });
@@ -114,7 +114,7 @@ export default {
                     const member = await interaction.guild.members.fetch(userId).catch(() => null);
                     
                     if (!member) {
-                        results.failed.push({ userId, reason: "User not in server" });
+                        results.failed.push({ userId, reason: "L'utilisateur n'est pas sur le serveur" });
                         continue;
                     }
 
@@ -123,7 +123,7 @@ export default {
                         results.skipped.push({ 
                             user: member.user.tag, 
                             userId, 
-                            reason: "Cannot kick user with equal or higher role" 
+                            reason: "Rôle équivalent ou supérieur" 
                         });
                         continue;
                     }
@@ -155,15 +155,15 @@ export default {
                     logger.error(`Failed to kick user ${userId}:`, error);
                     results.failed.push({ 
                         userId, 
-                        reason: error.message || "Unknown error" 
+                        reason: error.message || "Erreur inconnue" 
                     });
                 }
             }
 
-            let description = `**Mass Kick Results:**\n\n`;
+            let description = `**Résultats de l'expulsion de masse :**\n\n`;
             
             if (results.successful.length > 0) {
-                description += `✅ **Successfully Kicked (${results.successful.length}):**\n`;
+                description += `✅ **Expulsions réussies (${results.successful.length}) :**\n`;
                 results.successful.forEach(result => {
                     description += `• ${result.user} (${result.userId})\n`;
                 });
@@ -171,7 +171,7 @@ export default {
             }
 
             if (results.skipped.length > 0) {
-                description += `⚠️ **Skipped (${results.skipped.length}):**\n`;
+                description += `⚠️ **Ignorés (${results.skipped.length}) :**\n`;
                 results.skipped.forEach(result => {
                     description += `• ${result.user} - ${result.reason}\n`;
                 });
@@ -179,7 +179,7 @@ export default {
             }
 
             if (results.failed.length > 0) {
-                description += `❌ **Failed (${results.failed.length}):**\n`;
+                description += `❌ **Échecs (${results.failed.length}) :**\n`;
                 results.failed.forEach(result => {
                     description += `• ${result.userId} - ${result.reason}\n`;
                 });
@@ -190,7 +190,7 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     embed(
-                        `👢 Mass Kick Completed`,
+                        `Components 👢 Expulsion de masse terminée`,
                         description
                     )
                 ]
@@ -201,14 +201,11 @@ export default {
             return await InteractionHelper.safeEditReply(interaction, {
                 embeds: [
                     errorEmbed(
-                        "System Error",
-                        "An error occurred while processing the mass kick. Please try again later."
+                        "Erreur système",
+                        "Une erreur est survenue lors du traitement de l'expulsion de masse. Veuillez réessayer plus tard."
                     ),
                 ],
             });
         }
     }
 };
-
-
-
