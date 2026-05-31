@@ -5,21 +5,22 @@ import { logger } from '../../utils/logger.js';
 import { WarningService } from '../../services/warningService.js';
 import { handleInteractionError } from '../../utils/errorHandler.js';
 import { InteractionHelper } from '../../utils/interactionHelper.js';
+
 export default {
     data: new SlashCommandBuilder()
         .setName("warn")
-        .setDescription("Warn a user")
+        .setDescription("Avertir un utilisateur")
         .addUserOption((o) =>
             o
                 .setName("target")
                 .setRequired(true)
-                .setDescription("User to warn"),
+                .setDescription("L'utilisateur à avertir"),
         )
         .addStringOption((o) =>
             o
                 .setName("reason")
                 .setRequired(true)
-                .setDescription("Reason for the warning"),
+                .setDescription("Raison de l'avertissement"),
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     category: "moderation",
@@ -37,7 +38,7 @@ export default {
 
         try {
                 if (!interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
-                    throw new Error("You need the `Moderate Members` permission to issue warnings.");
+                    throw new Error("Vous avez besoin de la permission `Modérer les membres` pour donner des avertissements.");
                 }
 
                 const target = interaction.options.getUser("target");
@@ -47,7 +48,7 @@ export default {
                 const guildId = interaction.guildId;
 
                 if (!member) {
-                    throw new Error("The target user is not currently in this server.");
+                    throw new Error("L'utilisateur ciblé ne se trouve pas actuellement sur ce serveur.");
                 }
 
                 
@@ -60,7 +61,7 @@ export default {
                 });
 
                 if (!result.success) {
-                    throw new Error("Failed to store warning in database");
+                    throw new Error("Impossible d'enregistrer l'avertissement dans la base de données");
                 }
 
                 const totalWarns = result.totalCount;
@@ -86,8 +87,8 @@ export default {
                 await InteractionHelper.safeEditReply(interaction, {
                     embeds: [
                         successEmbed(
-                            `⚠️ **Warned** ${target.tag}`,
-                            `**Reason:** ${reason}\n**Total Warns:** ${totalWarns}`,
+                            `⚠️ **Avertissement donné** à ${target.tag}`,
+                            `**Raison :** ${reason}\n**Total des avertissements :** ${totalWarns}`,
                         ),
                     ],
                 });
@@ -97,6 +98,3 @@ export default {
         }
     }
 };
-
-
-
