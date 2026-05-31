@@ -1,8 +1,3 @@
-
-
-
-
-
 import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
 import { logger } from '../../utils/logger.js';
 import { handleInteractionError, TitanBotError, ErrorTypes } from '../../utils/errorHandler.js';
@@ -12,15 +7,9 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
   data: new SlashCommandBuilder()
     .setName('leaderboard')
-    .setDescription("Shows the server's level leaderboard")
+    .setDescription("Affiche le classement des niveaux du serveur")
     .setDMPermission(false),
   category: 'Leveling',
-
-  
-
-
-
-
 
   async execute(interaction, config, client) {
     try {
@@ -33,7 +22,7 @@ export default {
           embeds: [
             new EmbedBuilder()
               .setColor('#f1c40f')
-              .setDescription('The leveling system is currently disabled on this server.')
+              .setDescription('Le système de niveaux est actuellement désactivé sur ce serveur.')
           ],
           flags: MessageFlags.Ephemeral
         });
@@ -46,14 +35,14 @@ export default {
         throw new TitanBotError(
           'No leaderboard data found',
           ErrorTypes.DATABASE,
-          'No level data found yet. Start chatting to gain XP!'
+          'Aucune donnée de classement trouvée pour le moment. Commencez à discuter pour gagner de l\'XP !'
         );
       }
 
       const embed = new EmbedBuilder()
-        .setTitle('🏆 Level Leaderboard')
+        .setTitle('🏆 Classement des Niveaux')
         .setColor('#2ecc71')
-        .setDescription("Top 10 most active members in this server:")
+        .setDescription("Top 10 des membres les plus actifs de ce serveur :")
         .setTimestamp();
 
       const leaderboardText = await Promise.all(
@@ -69,15 +58,15 @@ export default {
             else if (index === 2) rankPrefix = '🥉';
             else rankPrefix = `**${index + 1}.**`;
 
-            return `${rankPrefix} ${userMention} - Level ${user.level} (${user.xp}/${xpForNextLevel} XP)`;
+            return `${rankPrefix} ${userMention} - Niveau ${user.level} (${user.xp}/${xpForNextLevel} XP)`;
           } catch {
-            return `**${index + 1}.** Error loading user ${user.userId}`;
+            return `**${index + 1}.** Erreur lors du chargement de l'utilisateur ${user.userId}`;
           }
         })
       );
 
       embed.addFields({
-        name: 'Rankings',
+        name: 'Classement',
         value: leaderboardText.join('\n')
       });
 
@@ -92,6 +81,3 @@ export default {
     }
   }
 };
-
-
-
