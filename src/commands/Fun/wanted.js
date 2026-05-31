@@ -8,17 +8,17 @@ import { InteractionHelper } from '../../utils/interactionHelper.js';
 export default {
     data: new SlashCommandBuilder()
     .setName("wanted")
-    .setDescription("Create a WANTED poster for a user.")
+    .setDescription("Crée un avis de recherche (WANTED) pour un utilisateur.")
     .addUserOption((option) =>
       option
         .setName("user")
-        .setDescription("The user who is wanted.")
+        .setDescription("L'utilisateur recherché.")
         .setRequired(true),
     )
     .addStringOption((option) =>
       option
         .setName("crime")
-        .setDescription("The crime they committed.")
+        .setDescription("Le crime qu'il a commis.")
         .setRequired(false)
         .setMaxLength(100),
     ),
@@ -32,7 +32,7 @@ export default {
       const crimeRaw = interaction.options.getString("crime");
 
       
-      let crime = "Too adorable for this server.";
+      let crime = "Beaucoup trop adorable pour ce serveur.";
       if (crimeRaw) {
         const sanitizedCrime = sanitizeInput(crimeRaw.trim(), 100);
         if (sanitizedCrime.length > 0) {
@@ -45,7 +45,7 @@ export default {
         throw new TitanBotError(
           'Target user not found for wanted command',
           ErrorTypes.USER_INPUT,
-          'Could not find the specified user.'
+          'Impossible de trouver l\'utilisateur spécifié.'
         );
       }
 
@@ -56,12 +56,12 @@ export default {
 
       const embed = createEmbed({
         color: 'primary',
-        title: '💥 BIG BOUNTY: WANTED! 💥',
-        description: `**CRIMINAL:** ${targetUser.tag}\n**CRIME:** ${crime}`,
+        title: '💥 GROSSE PRIME : RECHERCHÉ ! 💥',
+        description: `**CRIMINEL :** ${targetUser.tag}\n**CRIME :** ${crime}`,
         fields: [
           {
-            name: "DEAD OR ALIVE",
-            value: `**BOUNTY:** ${bounty}`,
+            name: "MORT OU VIF",
+            value: `**PRIME :** ${bounty}`,
             inline: false,
           },
         ],
@@ -69,7 +69,7 @@ export default {
           url: targetUser.displayAvatarURL({ size: 1024, extension: 'png' }),
         },
         footer: {
-          text: `Last seen in ${interaction.guild.name}`,
+          text: `Aperçu pour la dernière fois dans ${interaction.guild.name}`,
         },
       });
 
@@ -84,6 +84,3 @@ export default {
     }
   },
 };
-
-
-
